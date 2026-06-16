@@ -148,18 +148,31 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
         <option value="h1">H1</option><option value="h2">H2</option>
         <option value="h3">H3</option><option value="p">Para</option><option value="pre">Code</option>
       </select>
-      <select class="tsel" onchange="ec('fontName',this.value);this.value=''" style="width:84px;">
+      <select class="tsel" id="fontSel" onchange="applyFont(this.value);this.value=''" style="width:90px;">
         <option value="">Font</option>
-        <option>Arial</option><option>Georgia</option>
-        <option value="Times New Roman">Times</option>
-        <option>Verdana</option><option value="Courier New">Courier</option>
+        <option value="Arial">Arial</option>
+        <option value="Calibri">Calibri</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Times New Roman">Times NR</option>
+        <option value="Verdana">Verdana</option>
+        <option value="Courier New">Courier</option>
+        <option value="Trebuchet MS">Trebuchet</option>
+        <option value="Tahoma">Tahoma</option>
       </select>
-      <select class="tsel" onchange="ecSize(this.value);this.value=''">
-        <option value="">Size</option>
+      <!-- Free font size input + quick presets -->
+      <input type="number" id="fontSizeInput" class="tsel" placeholder="px" min="6" max="96"
+        style="width:46px;padding:2px 4px;text-align:center;"
+        onkeydown="if(event.key==='Enter'){applyFontSize(this.value+'px');}"
+        title="Type size in px, press Enter">
+      <button class="tb" onclick="applyFontSize(document.getElementById('fontSizeInput').value+'px')" title="Apply font size" style="padding:3px 5px;">✓</button>
+      <select class="tsel" onchange="applyFontSize(this.value);this.value=''" style="width:46px;" title="Quick sizes">
+        <option value="">↕</option>
         <option value="10px">10</option><option value="12px">12</option>
         <option value="14px">14</option><option value="16px">16</option>
-        <option value="18px">18</option><option value="22px">22</option>
-        <option value="28px">28</option><option value="36px">36</option>
+        <option value="18px">18</option><option value="20px">20</option>
+        <option value="22px">22</option><option value="24px">24</option>
+        <option value="28px">28</option><option value="32px">32</option>
+        <option value="36px">36</option><option value="48px">48</option>
       </select>
     </div>
     <div class="tg">
@@ -180,14 +193,18 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
       <button class="tb" onclick="doHR()">― HR</button>
     </div>
     <div class="tg">
-      <label style="display:flex;align-items:center;gap:2px;cursor:pointer;">
-        <span class="tb" style="pointer-events:none;font-size:11px;">A🎨</span>
-        <input type="color" onchange="ec('foreColor',this.value)" style="width:18px;height:18px;border:none;cursor:pointer;padding:0;background:none;">
+      <!-- Text color with Apply button -->
+      <label style="display:flex;align-items:center;gap:2px;cursor:pointer;" title="Text color">
+        <span class="tb" style="pointer-events:none;font-size:11px;">A</span>
+        <input type="color" id="txtColorPicker" value="#000000" style="width:22px;height:22px;border:none;cursor:pointer;padding:0;background:none;">
       </label>
-      <label style="display:flex;align-items:center;gap:2px;cursor:pointer;">
-        <span class="tb" style="pointer-events:none;font-size:11px;">BG🎨</span>
-        <input type="color" value="#ffff00" onchange="ec('hiliteColor',this.value)" style="width:18px;height:18px;border:none;cursor:pointer;padding:0;background:none;">
+      <button class="tb" onclick="applyTextColor()" title="Apply text color" style="padding:3px 5px;font-size:10px;">✓A</button>
+      <!-- BG color with Apply button -->
+      <label style="display:flex;align-items:center;gap:2px;cursor:pointer;" title="Highlight color">
+        <span class="tb" style="pointer-events:none;font-size:11px;">BG</span>
+        <input type="color" id="bgColorPicker" value="#ffff00" style="width:22px;height:22px;border:none;cursor:pointer;padding:0;background:none;">
       </label>
+      <button class="tb" onclick="applyBgColor()" title="Apply highlight color" style="padding:3px 5px;font-size:10px;">✓BG</button>
     </div>
   </div>
   <div class="top-r">
@@ -364,33 +381,26 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
   </div>
 </div>
 
-<!-- IMAGE MODAL -->
+<!-- IMAGE MODAL — URL and Drive only (no upload/base64 to avoid char limit) -->
 <div class="overlay" id="imgModal">
   <div class="modal">
     <div class="modal-title">🖼 Insert Image</div>
     <div class="mtabs">
-      <div class="mtab on" id="mt-url" onclick="switchMTab('url')">URL</div>
-      <div class="mtab" id="mt-drive" onclick="switchMTab('drive')">Drive</div>
-      <div class="mtab" id="mt-upload" onclick="switchMTab('upload')">Upload</div>
-      <div class="mtab" id="mt-b64" onclick="switchMTab('b64')">Base64</div>
+      <div class="mtab on" id="mt-url" onclick="switchMTab('url')">Image URL</div>
+      <div class="mtab" id="mt-drive" onclick="switchMTab('drive')">Google Drive</div>
     </div>
     <div id="mp-url">
-      <input class="mi" id="m-url" placeholder="https://…" oninput="prvUrl()">
+      <div class="dnote">Paste any public image URL. Hosted on your website, CDN, or any public server.</div>
+      <input class="mi" id="m-url" placeholder="https://example.com/image.jpg" oninput="prvUrl()">
       <img class="iprev" id="m-url-p">
     </div>
     <div id="mp-drive" style="display:none;">
-      <div class="dnote"><strong>⚠ Share setting:</strong> "Anyone with the link can view"<br>Paste Drive link → auto-converted to direct URL.</div>
-      <input class="mi" id="m-drive" placeholder="https://drive.google.com/file/d/…" oninput="prvDrive()">
+      <div class="dnote"><strong>⚠ Share setting must be:</strong> "Anyone with the link can view"<br>
+      Paste your Drive share link — auto-converted to direct image URL.<br>
+      <span style="color:var(--green);font-size:10px;">Works best for logos and banners. Recipients must have internet access to view.</span></div>
+      <input class="mi" id="m-drive" placeholder="https://drive.google.com/file/d/FILE_ID/view…" oninput="prvDrive()">
       <img class="iprev" id="m-drive-p">
       <div id="m-drive-u" style="font-size:10px;color:var(--green);margin-bottom:6px;display:none;word-break:break-all;"></div>
-    </div>
-    <div id="mp-upload" style="display:none;">
-      <div class="dropz" id="dz" onclick="document.getElementById('fi').click()" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="onDrop(event)">📁 Click or drag image (embeds as base64)</div>
-      <img class="iprev" id="m-up-p">
-      <input type="file" id="fi" accept="image/*" onchange="onFile(event)">
-    </div>
-    <div id="mp-b64" style="display:none;">
-      <textarea class="mi" id="m-b64" rows="3" placeholder="Paste base64…" style="resize:vertical;"></textarea>
     </div>
     <input class="mi" id="m-alt" placeholder="Alt text (optional)">
     <div style="display:flex;gap:6px;">
@@ -426,7 +436,7 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
 
 <script>
 var edDoc=null,selImg=null,selTbl=null,selCell=null,selRow=null;
-var upB64='',curMTab='url',activeTab='code',curCtxTab='tbl';
+var curMTab='url',activeTab='code',curCtxTab='tbl';
 
 // ══════════════════════════════════════════
 //  EDITOR IFRAME INIT
@@ -531,6 +541,8 @@ function setupColResize(){
 }
 function addCR(tbl){
   tbl.dataset.cr='1';
+  var cover=document.getElementById('dragCover');
+  var frame=document.getElementById('edFrame');
   var rebind=function(){
     tbl.querySelectorAll('td,th').forEach(function(cell){
       if(!cell.querySelector('.cr')){
@@ -538,11 +550,27 @@ function addCR(tbl){
         cell.appendChild(r);
         r.addEventListener('mousedown',function(e){
           e.preventDefault();e.stopPropagation();
-          var startX=e.clientX,startW=cell.offsetWidth;
+          // startX is in iframe coords; convert to page coords for parent tracking
+          var frameRect=frame.getBoundingClientRect();
+          var startPageX=e.clientX+frameRect.left;
+          var startW=cell.offsetWidth;
           r.classList.add('active');
-          var onMove=function(ev){cell.style.width=Math.max(20,startW+(ev.clientX-startX))+'px';};
-          var onUp=function(){r.classList.remove('active');edDoc.removeEventListener('mousemove',onMove);edDoc.removeEventListener('mouseup',onUp);};
-          edDoc.addEventListener('mousemove',onMove);edDoc.addEventListener('mouseup',onUp);
+          cover.style.display='block';
+          cover.style.cursor='col-resize';
+          // Track on parent document so mouse leaving iframe still works
+          var onMove=function(ev){
+            var delta=ev.clientX-startPageX;
+            cell.style.width=Math.max(20,startW+delta)+'px';
+          };
+          var onUp=function(){
+            r.classList.remove('active');
+            cover.style.display='none';
+            cover.style.cursor='col-resize';
+            document.removeEventListener('mousemove',onMove);
+            document.removeEventListener('mouseup',onUp);
+          };
+          document.addEventListener('mousemove',onMove);
+          document.addEventListener('mouseup',onUp);
         });
       }
     });
@@ -601,15 +629,54 @@ function ec(cmd,val){
   edDoc.execCommand(cmd,false,val||null);
   edDoc.body.focus();updateStats();
 }
-function ecSize(px){
-  if(!px||!edDoc)return;
+// ══════════════════════════════════════════
+//  FONT FAMILY + SIZE — direct span wrapping
+//  (execCommand fontName/fontSize unreliable
+//   across browsers in designMode iframes)
+// ══════════════════════════════════════════
+function wrapSelectionWithStyle(styleObj){
+  if(!edDoc)return;
   var sel=edDoc.getSelection();
-  if(!sel||!sel.rangeCount||sel.isCollapsed)return;
+  if(!sel||!sel.rangeCount)return;
+  if(sel.isCollapsed){showToast('Select text first','⚠');return;}
   var range=sel.getRangeAt(0);
-  var span=edDoc.createElement('span');span.style.fontSize=px;
-  try{range.surroundContents(span);}
-  catch(e){var f=range.extractContents();span.appendChild(f);range.insertNode(span);}
-  updateStats();
+  var span=edDoc.createElement('span');
+  Object.keys(styleObj).forEach(function(k){span.style[k]=styleObj[k];});
+  try{
+    range.surroundContents(span);
+  } catch(e){
+    // Range spans multiple elements — extract and wrap
+    var frag=range.extractContents();
+    span.appendChild(frag);
+    range.insertNode(span);
+  }
+  // Restore selection
+  var newRange=edDoc.createRange();
+  newRange.selectNodeContents(span);
+  sel.removeAllRanges();sel.addRange(newRange);
+}
+
+function applyFont(fontFamily){
+  if(!fontFamily)return;
+  wrapSelectionWithStyle({'fontFamily':fontFamily});
+}
+
+function applyFontSize(px){
+  var v=parseInt(px);
+  if(!v||v<1)return;
+  var pxVal=v+'px';
+  document.getElementById('fontSizeInput').value=v;
+  wrapSelectionWithStyle({'fontSize':pxVal});
+}
+
+function applyTextColor(){
+  var color=document.getElementById('txtColorPicker').value;
+  wrapSelectionWithStyle({'color':color});
+}
+
+function applyBgColor(){
+  var color=document.getElementById('bgColorPicker').value;
+  wrapSelectionWithStyle({'backgroundColor':color});
 }
 function insertNode(node){
   if(!edDoc)return;
@@ -1074,10 +1141,10 @@ function doInsertTable(){
 // ══════════════════════════════════════════
 //  IMAGE INSERT
 // ══════════════════════════════════════════
-function openImgModal(){upB64='';openModal('imgModal');}
+function openImgModal(){openModal('imgModal');}
 function switchMTab(t){
   curMTab=t;
-  ['url','drive','upload','b64'].forEach(function(x){
+  ['url','drive'].forEach(function(x){
     document.getElementById('mt-'+x).classList.toggle('on',x===t);
     document.getElementById('mp-'+x).style.display=x===t?'block':'none';
   });
@@ -1094,19 +1161,11 @@ function prvDrive(){
   if(d){p.src=d;p.style.display='block';u.textContent='→ '+d;u.style.display='block';}
   else{p.style.display='none';u.style.display='none';}
 }
-function onDrop(e){e.preventDefault();document.getElementById('dz').classList.remove('over');var f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))readFile(f);}
-function onFile(e){var f=e.target.files[0];if(f)readFile(f);}
-function readFile(f){
-  var r=new FileReader();
-  r.onload=function(ev){upB64=ev.target.result;var p=document.getElementById('m-up-p');p.src=upB64;p.style.display='block';document.getElementById('dz').textContent='✓ '+f.name;};
-  r.readAsDataURL(f);
 }
 function insertImg(){
   var src='';
   if(curMTab==='url')src=document.getElementById('m-url').value.trim();
   else if(curMTab==='drive'){src=driveUrl(document.getElementById('m-drive').value.trim())||'';if(!src){showToast('Invalid Drive link','⚠');return;}}
-  else if(curMTab==='upload')src=upB64;
-  else{var b=document.getElementById('m-b64').value.trim();src=b.startsWith('data:')?b:'data:image/png;base64,'+b;}
   if(!src){showToast('No image source','⚠');return;}
   var img=edDoc.createElement('img');
   img.src=src;img.alt=document.getElementById('m-alt').value.trim();
