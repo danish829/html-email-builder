@@ -14,18 +14,21 @@
   --green:#22c55e;--amber:#f59e0b;--red:#ef4444;
   --text:#e2e2ee;--sub:#a0a0b8;--muted:#5a5a72;
 }
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;font-size:13px;}
+html,body{height:100%;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;overflow:hidden;font-size:13px;}
 
-.topbar{display:flex;align-items:center;background:var(--s1);border-bottom:1px solid var(--border);height:44px;flex-shrink:0;overflow:hidden;}
+.topbar{display:flex;align-items:center;background:var(--s1);border-bottom:1px solid var(--border);height:46px;flex-shrink:0;}
 .brand{display:flex;align-items:center;gap:8px;padding:0 14px;border-right:1px solid var(--border);height:100%;font-weight:600;font-size:13px;white-space:nowrap;flex-shrink:0;}
 .brand-dot{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--accent),var(--accent-h));display:flex;align-items:center;justify-content:center;font-size:10px;}
-.tools{display:flex;align-items:center;gap:1px;padding:0 8px;flex:1;overflow-x:auto;min-width:0;}
+.tools{display:flex;align-items:center;gap:1px;padding:0 6px;flex:1;overflow-x:auto;}
 .tools::-webkit-scrollbar{display:none;}
-.tg{display:flex;align-items:center;gap:1px;padding-right:6px;margin-right:4px;border-right:1px solid var(--border);flex-shrink:0;}
+.tg{display:flex;align-items:center;gap:1px;padding-right:5px;margin-right:3px;border-right:1px solid var(--border);flex-shrink:0;}
 .tg:last-child{border:none;}
-.tb{background:transparent;border:none;color:var(--sub);padding:3px 6px;border-radius:4px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif;font-weight:500;height:26px;display:flex;align-items:center;gap:3px;white-space:nowrap;transition:background .1s,color .1s;}
+.tb{background:transparent;border:none;color:var(--sub);padding:3px 6px;border-radius:4px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif;font-weight:500;height:28px;display:flex;align-items:center;gap:3px;white-space:nowrap;transition:background .1s,color .1s;}
 .tb:hover{background:var(--s3);color:var(--text);}
-select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text);padding:2px 4px;border-radius:4px;font-size:11px;font-family:'Inter',sans-serif;outline:none;height:24px;cursor:pointer;}
+select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text);padding:2px 4px;border-radius:4px;font-size:11px;font-family:'Inter',sans-serif;outline:none;height:26px;cursor:pointer;}
+input.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text);padding:2px 4px;border-radius:4px;font-size:11px;font-family:'Inter',sans-serif;outline:none;height:26px;}
+input.tsel:focus{border-color:var(--accent);}
 .top-r{display:flex;align-items:center;gap:5px;padding:0 10px;border-left:1px solid var(--border);height:100%;flex-shrink:0;}
 
 .cleanbar{display:flex;align-items:center;gap:5px;padding:5px 12px;background:var(--s1);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;}
@@ -33,44 +36,54 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
 .chip input{accent-color:var(--accent);cursor:pointer;}
 .chip:hover{border-color:var(--accent);color:var(--accent-h);}
 
-.workspace{display:flex;flex:1;min-height:0;position:relative;}
+.workspace{display:flex;flex:1;min-height:0;}
 
-/* SPLITTER — fixed smooth drag */
-.splitter{
-  width:6px;background:var(--border);cursor:col-resize;flex-shrink:0;
-  position:relative;z-index:10;transition:background .1s;
-  user-select:none;
+/* SPLITTER */
+.splitter{width:5px;background:var(--border);cursor:col-resize;flex-shrink:0;user-select:none;}
+.splitter:hover,.splitter.active{background:var(--accent);}
+
+/* EDITOR PANE */
+.epane{display:flex;flex-direction:column;width:52%;min-width:200px;flex-shrink:0;}
+.pane-hdr{display:flex;align-items:center;justify-content:space-between;padding:5px 12px;background:var(--s1);border-bottom:1px solid var(--border);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);flex-shrink:0;}
+.pane-hdr-r{display:flex;gap:8px;font-size:11px;color:var(--sub);}
+
+/* THE EDITOR — plain contenteditable div, no iframe */
+#editor{
+  flex:1;overflow-y:auto;
+  background:#ffffff;
+  color:#1a1a2e;
+  font-family:Arial,sans-serif;
+  font-size:14px;
+  line-height:1.75;
+  padding:24px 28px;
+  outline:none;
+  cursor:text;
 }
-.splitter::after{
-  content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:2px;height:40px;background:var(--border2);border-radius:2px;
-}
-.splitter:hover,.splitter.dragging{background:var(--accent);}
-.splitter.dragging::after{background:var(--accent-h);}
-/* Drag cover — prevents iframe stealing mouse events */
-#dragCover{display:none;position:fixed;inset:0;z-index:9999;cursor:col-resize;}
+#editor:empty::before{content:'Paste or type email content here…';color:#aab;pointer-events:none;}
+#editor img{max-width:100%;height:auto;cursor:pointer;border:2px solid transparent;}
+#editor img:hover,#editor img.sel{border-color:#7c6af7;outline:1px dashed #9b8cff;outline-offset:2px;}
+#editor table{border-collapse:collapse;margin:10px 0;}
+#editor td,#editor th{border:1px solid #ccc;padding:7px 10px;min-width:30px;position:relative;}
+#editor th{background:#f0f0f5;font-weight:600;}
+#editor a{color:#5b4de0;}
+/* col resize handle */
+#editor .cr{position:absolute;top:0;right:0;width:5px;height:100%;cursor:col-resize;background:transparent;z-index:3;}
+#editor .cr:hover{background:rgba(124,106,247,.5);}
 
-.epane{display:flex;flex-direction:column;width:52%;min-width:180px;flex-shrink:0;}
-.pane-hdr{display:flex;align-items:center;justify-content:space-between;padding:5px 11px;background:var(--s1);border-bottom:1px solid var(--border);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);flex-shrink:0;}
-.pane-hdr-r{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--sub);}
-#edFrame{flex:1;border:none;background:#fff;width:100%;display:block;}
-
-.opane{display:flex;flex-direction:column;flex:1;min-width:180px;overflow:hidden;}
+/* OUTPUT PANE */
+.opane{display:flex;flex-direction:column;flex:1;min-width:200px;}
 .tab-bar{display:flex;background:var(--s1);border-bottom:1px solid var(--border);flex-shrink:0;}
-.otab{padding:7px 14px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;user-select:none;transition:color .1s;}
+.otab{padding:8px 16px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;user-select:none;}
 .otab.on{color:var(--accent-h);border-bottom-color:var(--accent);}
-
-.conv-bar{display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--s2);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;}
-#convBtn{background:linear-gradient(135deg,var(--accent),var(--accent-h));color:#fff;border:none;padding:5px 14px;border-radius:6px;font-size:12px;font-family:'Inter',sans-serif;font-weight:600;cursor:pointer;transition:opacity .15s;display:flex;align-items:center;gap:5px;}
-#convBtn:hover{opacity:.85;}#convBtn:disabled{opacity:.5;cursor:default;}
-#minBtn{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.3);padding:5px 10px;border-radius:6px;font-size:11px;font-family:'Inter',sans-serif;font-weight:600;cursor:pointer;transition:all .1s;display:flex;align-items:center;gap:4px;}
-#minBtn:hover{background:rgba(245,158,11,.2);}
-#h2eBtn{background:rgba(56,189,248,.1);color:#38bdf8;border:1px solid rgba(56,189,248,.25);padding:5px 10px;border-radius:6px;font-size:11px;font-family:'Inter',sans-serif;font-weight:500;cursor:pointer;transition:all .1s;display:flex;align-items:center;gap:4px;}
-#h2eBtn:hover{background:rgba(56,189,248,.18);}
+.conv-bar{display:flex;align-items:center;gap:6px;padding:7px 10px;background:var(--s2);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;}
+#convBtn{background:linear-gradient(135deg,var(--accent),var(--accent-h));color:#fff;border:none;padding:6px 16px;border-radius:6px;font-size:12px;font-family:'Inter',sans-serif;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;}
+#convBtn:disabled{opacity:.5;cursor:default;}
+.act-btn{border:1px solid;padding:5px 10px;border-radius:6px;font-size:11px;font-family:'Inter',sans-serif;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;}
+.act-amber{background:rgba(245,158,11,.1);color:var(--amber);border-color:rgba(245,158,11,.3);}
+.act-sky{background:rgba(56,189,248,.1);color:#38bdf8;border-color:rgba(56,189,248,.25);}
 #ccount{font-size:11px;color:var(--sub);margin-left:auto;white-space:nowrap;}
 .char-warn{color:var(--amber)!important;}.char-err{color:var(--red)!important;}
-
-#htmlOut{flex:1;padding:14px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.6;background:#080810;color:#8ab;border:none;outline:none;resize:none;overflow-y:auto;white-space:pre-wrap;word-break:break-all;display:block;}
+#htmlOut{flex:1;padding:14px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.65;background:#080810;color:#8ab;border:none;outline:none;resize:none;overflow-y:auto;white-space:pre-wrap;word-break:break-all;}
 #prevFrame{flex:1;border:none;background:#fff;display:none;}
 
 .footer{display:flex;align-items:center;gap:14px;padding:5px 12px;background:var(--s1);border-top:1px solid var(--border);font-size:11px;color:var(--muted);flex-shrink:0;}
@@ -78,113 +91,101 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
 
 .btn{font-family:'Inter',sans-serif;font-size:11px;font-weight:500;padding:4px 10px;border-radius:5px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all .1s;}
 .btn-ghost{background:transparent;color:var(--sub);border:1px solid var(--border);}
-.btn-ghost:hover{color:var(--text);border-color:var(--border2);}
+.btn-ghost:hover{color:var(--text);}
 .btn-primary{background:var(--accent);color:#fff;}
 .btn-primary:hover{background:var(--accent-h);}
 .btn-green{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25);}
-.btn-green:hover{background:rgba(34,197,94,.2);}
 
-/* TABLE CONTEXT PANEL — wider for full controls */
+/* CONTEXT PANELS */
 .ctx{position:fixed;background:var(--s2);border:1px solid var(--border2);border-radius:9px;padding:12px;box-shadow:0 12px 36px rgba(0,0,0,.6);z-index:400;min-width:260px;display:none;}
 .ctx.show{display:block;}
 .ctx-hdr{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:9px;display:flex;align-items:center;justify-content:space-between;}
 .crow{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
-.crow label{font-size:11px;color:var(--sub);width:68px;flex-shrink:0;}
+.crow label{font-size:11px;color:var(--sub);width:70px;flex-shrink:0;}
 .ci{flex:1;background:var(--s3);border:1px solid var(--border);color:var(--text);padding:4px 7px;border-radius:4px;font-size:11px;font-family:'Inter',sans-serif;outline:none;}
 .ci:focus{border-color:var(--accent);}
 .csep{height:1px;background:var(--border);margin:8px 0;}
-.xbtn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;line-height:1;padding:2px;}
+.xbtn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:2px;}
 .xbtn:hover{color:var(--text);}
 .del-btn{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2);font-size:11px;padding:3px 7px;border-radius:4px;cursor:pointer;font-family:'Inter',sans-serif;}
 .ctx-tabs{display:flex;gap:2px;background:var(--s3);border-radius:5px;padding:2px;margin-bottom:9px;}
-.ctx-tab{flex:1;padding:4px;text-align:center;font-size:10px;font-weight:600;color:var(--muted);cursor:pointer;border-radius:4px;transition:all .1s;text-transform:uppercase;}
+.ctx-tab{flex:1;padding:4px;text-align:center;font-size:10px;font-weight:600;color:var(--muted);cursor:pointer;border-radius:4px;text-transform:uppercase;}
 .ctx-tab.on{background:var(--accent);color:#fff;}
+.cp{background:var(--s3);border:none;border-radius:4px;cursor:pointer;padding:0;width:28px;height:24px;}
 
-/* LINK MODAL */
+/* MODALS */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;z-index:500;}
 .overlay.open{display:flex;}
-.modal{background:var(--s2);border:1px solid var(--border2);border-radius:11px;padding:18px;width:460px;max-width:95vw;max-height:86vh;overflow-y:auto;}
+.modal{background:var(--s2);border:1px solid var(--border2);border-radius:11px;padding:18px;width:440px;max-width:96vw;max-height:88vh;overflow-y:auto;}
 .modal-title{font-size:13px;font-weight:600;margin-bottom:12px;}
 .mtabs{display:flex;gap:2px;background:var(--s3);border-radius:6px;padding:3px;margin-bottom:10px;}
-.mtab{flex:1;padding:4px;text-align:center;font-size:10px;font-weight:600;color:var(--muted);cursor:pointer;border-radius:4px;transition:all .1s;text-transform:uppercase;letter-spacing:.04em;}
+.mtab{flex:1;padding:5px;text-align:center;font-size:10px;font-weight:600;color:var(--muted);cursor:pointer;border-radius:4px;text-transform:uppercase;}
 .mtab.on{background:var(--accent);color:#fff;}
-.mi{width:100%;background:var(--s3);border:1px solid var(--border);color:var(--text);padding:7px 9px;border-radius:6px;font-size:12px;font-family:'Inter',sans-serif;outline:none;margin-bottom:7px;}
+.mi{width:100%;background:var(--s3);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:6px;font-size:12px;font-family:'Inter',sans-serif;outline:none;margin-bottom:8px;}
 .mi:focus{border-color:var(--accent);}
-.dropz{border:2px dashed var(--border);border-radius:7px;padding:22px;text-align:center;color:var(--muted);font-size:12px;cursor:pointer;margin-bottom:7px;}
-.dropz:hover,.dropz.over{border-color:var(--accent);color:var(--accent-h);}
-.iprev{max-width:100%;border-radius:5px;margin-bottom:7px;display:none;border:1px solid var(--border);}
-.mfooter{display:flex;justify-content:flex-end;gap:6px;margin-top:8px;}
-.dnote{font-size:11px;color:var(--muted);background:var(--s3);border-radius:5px;padding:6px 8px;margin-bottom:7px;line-height:1.5;}
+.mfooter{display:flex;justify-content:flex-end;gap:6px;margin-top:10px;}
+.dnote{font-size:11px;color:var(--muted);background:var(--s3);border-radius:5px;padding:7px 9px;margin-bottom:8px;line-height:1.5;}
 .dnote strong{color:var(--amber);}
-#fi{display:none;}
 .mi-label{font-size:11px;color:var(--sub);margin-bottom:4px;display:block;}
+.iprev{max-width:100%;border-radius:5px;margin-bottom:7px;display:none;border:1px solid var(--border);}
 
-.toast{position:fixed;bottom:18px;right:18px;background:var(--s3);border:1px solid var(--border2);color:var(--text);padding:8px 13px;border-radius:7px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px;box-shadow:0 6px 24px rgba(0,0,0,.5);transform:translateY(10px);opacity:0;transition:all .18s;pointer-events:none;z-index:9999;}
+.toast{position:fixed;bottom:18px;right:18px;background:var(--s3);border:1px solid var(--border2);color:var(--text);padding:9px 14px;border-radius:7px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:7px;box-shadow:0 6px 24px rgba(0,0,0,.5);transform:translateY(10px);opacity:0;transition:all .18s;pointer-events:none;z-index:9999;}
 .toast.show{transform:translateY(0);opacity:1;}
 </style>
 </head>
 <body>
 
-<!-- drag cover prevents iframe stealing mouse during splitter drag -->
-<div id="dragCover"></div>
-
 <div class="topbar">
   <div class="brand"><div class="brand-dot">✦</div>HTML Builder</div>
   <div class="tools">
     <div class="tg">
-      <!-- Undo / Redo -->
-      <button class="tb" onclick="doUndo()" title="Undo (Ctrl+Z)">↩ Undo</button>
-      <button class="tb" onclick="doRedo()" title="Redo (Ctrl+Y)">↪ Redo</button>
+      <button class="tb" onclick="cmd('undo')" title="Ctrl+Z">↩</button>
+      <button class="tb" onclick="cmd('redo')" title="Ctrl+Y">↪</button>
     </div>
     <div class="tg">
-      <button class="tb" onclick="ec('bold')"><b>B</b></button>
-      <button class="tb" onclick="ec('italic')"><i>I</i></button>
-      <button class="tb" onclick="ec('underline')"><u>U</u></button>
-      <button class="tb" onclick="ec('strikeThrough')"><s>S</s></button>
+      <button class="tb" onclick="cmd('bold')"><b>B</b></button>
+      <button class="tb" onclick="cmd('italic')"><i>I</i></button>
+      <button class="tb" onclick="cmd('underline')"><u>U</u></button>
+      <button class="tb" onclick="cmd('strikeThrough')"><s>S</s></button>
     </div>
     <div class="tg">
-      <select class="tsel" onchange="ec('formatBlock',this.value);this.value=''">
+      <select class="tsel" onchange="cmd('formatBlock',this.value);this.value=''">
         <option value="">Style</option>
         <option value="h1">H1</option><option value="h2">H2</option>
-        <option value="h3">H3</option><option value="p">Para</option><option value="pre">Code</option>
+        <option value="h3">H3</option><option value="p">Para</option>
       </select>
-      <select class="tsel" id="fontSel" onchange="applyFont(this.value);this.value=''" style="width:90px;">
+      <select class="tsel" onchange="applyFont(this.value);this.value=''" style="width:88px;">
         <option value="">Font</option>
         <option value="Arial">Arial</option>
         <option value="Calibri">Calibri</option>
         <option value="Georgia">Georgia</option>
         <option value="Times New Roman">Times NR</option>
         <option value="Verdana">Verdana</option>
-        <option value="Courier New">Courier</option>
         <option value="Trebuchet MS">Trebuchet</option>
         <option value="Tahoma">Tahoma</option>
+        <option value="Courier New">Courier</option>
       </select>
-      <!-- Free font size input + quick presets -->
-      <input type="number" id="fontSizeInput" class="tsel" placeholder="px" min="6" max="96"
-        style="width:46px;padding:2px 4px;text-align:center;"
-        onkeydown="if(event.key==='Enter'){applyFontSize(this.value+'px');}"
-        title="Type size in px, press Enter">
-      <button class="tb" onclick="applyFontSize(document.getElementById('fontSizeInput').value+'px')" title="Apply font size" style="padding:3px 5px;">✓</button>
-      <select class="tsel" onchange="applyFontSize(this.value);this.value=''" style="width:46px;" title="Quick sizes">
+      <input type="number" id="fsz" class="tsel" placeholder="px" min="6" max="96" style="width:44px;text-align:center;" title="Font size — press Enter">
+      <button class="tb" onclick="applySize()" style="padding:2px 5px;font-size:10px;" title="Apply size">✓</button>
+      <select class="tsel" onchange="applyFontSizePx(this.value);this.value=''" style="width:42px;" title="Quick sizes">
         <option value="">↕</option>
-        <option value="10px">10</option><option value="12px">12</option>
-        <option value="14px">14</option><option value="16px">16</option>
-        <option value="18px">18</option><option value="20px">20</option>
-        <option value="22px">22</option><option value="24px">24</option>
-        <option value="28px">28</option><option value="32px">32</option>
-        <option value="36px">36</option><option value="48px">48</option>
+        <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+        <option value="13">13</option><option value="14">14</option><option value="16">16</option>
+        <option value="18">18</option><option value="20">20</option><option value="22">22</option>
+        <option value="24">24</option><option value="28">28</option><option value="32">32</option>
+        <option value="36">36</option><option value="48">48</option>
       </select>
     </div>
     <div class="tg">
-      <button class="tb" onclick="ec('insertUnorderedList')">• List</button>
-      <button class="tb" onclick="ec('insertOrderedList')">1. List</button>
-      <button class="tb" onclick="ec('indent')">→</button>
-      <button class="tb" onclick="ec('outdent')">←</button>
+      <button class="tb" onclick="cmd('insertUnorderedList')">• List</button>
+      <button class="tb" onclick="cmd('insertOrderedList')">1. List</button>
+      <button class="tb" onclick="cmd('indent')">→</button>
+      <button class="tb" onclick="cmd('outdent')">←</button>
     </div>
     <div class="tg">
-      <button class="tb" onclick="ec('justifyLeft')">⬅</button>
-      <button class="tb" onclick="ec('justifyCenter')">↔</button>
-      <button class="tb" onclick="ec('justifyRight')">➡</button>
+      <button class="tb" onclick="cmd('justifyLeft')">⬅</button>
+      <button class="tb" onclick="cmd('justifyCenter')">↔</button>
+      <button class="tb" onclick="cmd('justifyRight')">➡</button>
     </div>
     <div class="tg">
       <button class="tb" onclick="openLinkModal()">🔗 Link</button>
@@ -193,18 +194,10 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
       <button class="tb" onclick="doHR()">― HR</button>
     </div>
     <div class="tg">
-      <!-- Text color with Apply button -->
-      <label style="display:flex;align-items:center;gap:2px;cursor:pointer;" title="Text color">
-        <span class="tb" style="pointer-events:none;font-size:11px;">A</span>
-        <input type="color" id="txtColorPicker" value="#000000" style="width:22px;height:22px;border:none;cursor:pointer;padding:0;background:none;">
-      </label>
-      <button class="tb" onclick="applyTextColor()" title="Apply text color" style="padding:3px 5px;font-size:10px;">✓A</button>
-      <!-- BG color with Apply button -->
-      <label style="display:flex;align-items:center;gap:2px;cursor:pointer;" title="Highlight color">
-        <span class="tb" style="pointer-events:none;font-size:11px;">BG</span>
-        <input type="color" id="bgColorPicker" value="#ffff00" style="width:22px;height:22px;border:none;cursor:pointer;padding:0;background:none;">
-      </label>
-      <button class="tb" onclick="applyBgColor()" title="Apply highlight color" style="padding:3px 5px;font-size:10px;">✓BG</button>
+      <input type="color" id="txClr" value="#000000" style="width:22px;height:22px;border:1px solid var(--border);border-radius:3px;cursor:pointer;padding:0;">
+      <button class="tb" onclick="applyColor('fore')" style="font-size:10px;padding:2px 5px;">✓A</button>
+      <input type="color" id="bgClr" value="#ffff00" style="width:22px;height:22px;border:1px solid var(--border);border-radius:3px;cursor:pointer;padding:0;">
+      <button class="tb" onclick="applyColor('bg')" style="font-size:10px;padding:2px 5px;">✓BG</button>
     </div>
   </div>
   <div class="top-r">
@@ -215,58 +208,61 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
 </div>
 
 <div class="cleanbar">
-  <span style="font-size:11px;color:var(--muted);margin-right:2px;">Clean:</span>
+  <span style="font-size:11px;color:var(--muted);margin-right:3px;">Clean:</span>
   <label class="chip"><input type="checkbox" id="o-ms" checked> MS Office</label>
   <label class="chip"><input type="checkbox" id="o-cls" checked> Strip classes</label>
-  <label class="chip"><input type="checkbox" id="o-font"> Remove &lt;font&gt;</label>
+  <label class="chip"><input type="checkbox" id="o-font"> &lt;font&gt; tags</label>
   <label class="chip"><input type="checkbox" id="o-span"> Collapse spans</label>
   <label class="chip"><input type="checkbox" id="o-inline" checked> Keep styles</label>
   <label class="chip"><input type="checkbox" id="o-pretty" checked> Pretty print</label>
   <label class="chip"><input type="checkbox" id="o-wrap"> 600px wrapper</label>
-  <label class="chip"><input type="checkbox" id="o-fixchars" checked> Fix special chars (₹ ' ")</label>
+  <label class="chip"><input type="checkbox" id="o-fix" checked> Fix ₹ ' " chars</label>
 </div>
 
 <div class="workspace">
+  <!-- EDITOR -->
   <div class="epane" id="epane">
     <div class="pane-hdr">
       <span>✏ Compose / Paste</span>
-      <div class="pane-hdr-r">
-        <span id="wc">0 w</span><span id="ic">0🖼</span><span id="tc">0⊞</span>
-      </div>
+      <div class="pane-hdr-r"><span id="wc">0w</span><span id="ic">0🖼</span><span id="tc">0⊞</span></div>
     </div>
-    <iframe id="edFrame"></iframe>
+    <div id="editor" contenteditable="true" spellcheck="false"
+      onkeyup="updateStats()" oninput="updateStats()"
+      onclick="onEdClick(event)">
+    </div>
   </div>
 
-  <div class="splitter" id="splitter"></div>
+  <div class="splitter" id="spl"></div>
 
-  <div class="opane" id="opane">
+  <!-- OUTPUT -->
+  <div class="opane">
     <div class="tab-bar">
       <div class="otab on" id="tab-code" onclick="switchTab('code')">‹/› HTML</div>
       <div class="otab" id="tab-prev" onclick="switchTab('prev')">👁 Preview</div>
     </div>
     <div class="conv-bar">
       <button id="convBtn" onclick="doConvert()">⚡ Convert to HTML</button>
-      <button id="minBtn" onclick="doMinify()">⚡ Minify</button>
-      <button id="h2eBtn" onclick="htmlToEditor()">↩ HTML → Editor</button>
+      <button class="act-btn act-amber" onclick="doMinify()">⚡ Minify</button>
+      <button class="act-btn act-sky" onclick="htmlToEditor()">↩ HTML→Editor</button>
       <span id="ccount"></span>
     </div>
     <div class="pane-hdr" style="border-top:none;">
-      <span id="outLabel">OUTPUT</span>
+      <span>OUTPUT</span>
       <div class="pane-hdr-r">
         <button class="btn btn-green" onclick="copyHTML()">⎘ Copy</button>
         <button class="btn btn-ghost" onclick="downloadHTML()">↓ .html</button>
       </div>
     </div>
-    <textarea id="htmlOut" placeholder="Paste content left → ⚡ Convert  or  paste HTML here → ↩ HTML → Editor"></textarea>
+    <textarea id="htmlOut" placeholder="Paste content left → ⚡ Convert   or   paste HTML here → ↩ HTML→Editor"></textarea>
     <iframe id="prevFrame" title="Preview"></iframe>
   </div>
 </div>
 
 <div class="footer">
-  <span>Images: <strong id="f-img">0</strong></span>
-  <span>Tables: <strong id="f-tbl">0</strong></span>
-  <span>Links: <strong id="f-lnk">0</strong></span>
-  <div class="footer-r">Drag image corner to resize • Drag column border to resize • Ctrl+Z/Y undo/redo</div>
+  <span>Images:<strong id="f-img">0</strong></span>
+  <span>Tables:<strong id="f-tbl">0</strong></span>
+  <span>Links:<strong id="f-lnk">0</strong></span>
+  <div class="footer-r">Drag image corner • Drag col border • Ctrl+Z/Y undo/redo</div>
 </div>
 
 <!-- IMAGE CONTEXT -->
@@ -274,86 +270,60 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
   <div class="ctx-hdr">🖼 Image <button class="xbtn" onclick="closeCtx('imgCtx')">✕</button></div>
   <div class="crow"><label>Width</label><input class="ci" id="iw" placeholder="300px or 100%"></div>
   <div class="crow"><label>Height</label><input class="ci" id="ih" placeholder="auto"></div>
-  <div class="crow"><label>Alt</label><input class="ci" id="ialt" placeholder="description"></div>
+  <div class="crow"><label>Alt text</label><input class="ci" id="ialt" placeholder="description"></div>
   <div class="crow"><label>Align</label>
-    <select class="ci" id="ialign"><option value="">None</option><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select>
+    <select class="ci" id="ialign"><option value="">None</option><option value="left">Left float</option><option value="center">Center</option><option value="right">Right float</option></select>
   </div>
   <div class="crow"><label>Border</label><input class="ci" id="iborder" placeholder="1px solid #ccc"></div>
   <div class="crow"><label>Radius</label><input class="ci" id="iradius" placeholder="8px"></div>
   <div class="csep"></div>
-  <div class="crow"><label>Drive URL</label><input class="ci" id="idriveurl" placeholder="Drive share link…"></div>
+  <div class="crow"><label>Drive URL</label><input class="ci" id="idriveurl" placeholder="Drive share link to swap src"></div>
   <div style="display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;">
-    <button class="btn btn-primary" onclick="applyImg()">Apply</button>
-    <button class="btn btn-ghost" onclick="applyDrive()">↻ Drive</button>
-    <button class="del-btn" onclick="delSel('img')">🗑 Delete</button>
+    <button class="btn btn-primary" onclick="applyImgProps()">Apply</button>
+    <button class="btn btn-ghost" onclick="applyDriveSrc()">↻ Drive</button>
+    <button class="del-btn" onclick="delSelected('img')">🗑 Delete</button>
   </div>
 </div>
 
-<!-- TABLE CONTEXT — tabbed: Table / Row / Cell -->
-<div class="ctx" id="tblCtx" style="min-width:280px;">
+<!-- TABLE CONTEXT -->
+<div class="ctx" id="tblCtx" style="min-width:270px;">
   <div class="ctx-hdr">⊞ Table Editor <button class="xbtn" onclick="closeCtx('tblCtx')">✕</button></div>
   <div class="ctx-tabs">
-    <div class="ctx-tab on" id="ct-tbl" onclick="switchCtxTab('tbl')">Table</div>
-    <div class="ctx-tab" id="ct-row" onclick="switchCtxTab('row')">Row</div>
-    <div class="ctx-tab" id="ct-cell" onclick="switchCtxTab('cell')">Cell</div>
+    <div class="ctx-tab on" id="ct-t" onclick="ctxTab('t')">Table</div>
+    <div class="ctx-tab" id="ct-r" onclick="ctxTab('r')">Row</div>
+    <div class="ctx-tab" id="ct-c" onclick="ctxTab('c')">Cell</div>
   </div>
-
-  <!-- TABLE TAB -->
-  <div id="cp-tbl">
+  <div id="cp-t">
     <div class="crow"><label>Width</label><input class="ci" id="tw" placeholder="100% or 600px"></div>
-    <div class="crow"><label>Border</label><input class="ci" id="tborder" placeholder="1px solid #ccc"></div>
+    <div class="crow"><label>Border</label><input class="ci" id="tbdr" placeholder="1px solid #ccc"></div>
     <div class="crow"><label>Cell pad</label><input class="ci" id="tpad" placeholder="8px 12px"></div>
-    <div class="crow"><label>Align</label>
-      <select class="ci" id="talign"><option value="">Default</option><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select>
-    </div>
-    <div class="crow"><label>BG color</label>
-      <input type="color" id="tbgp" value="#ffffff" oninput="document.getElementById('tbgh').value=this.value" style="width:28px;height:22px;border:1px solid var(--border);border-radius:3px;cursor:pointer;padding:1px;">
-      <input class="ci" id="tbgh" placeholder="#ffffff" style="flex:1;" oninput="syncCP('tbgp','tbgh')">
-    </div>
-    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;">
+    <div class="crow"><label>Align</label><select class="ci" id="talign"><option value="">Default</option><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
+    <div class="crow"><label>BG</label><input type="color" class="cp" id="tbgc" value="#ffffff"><input class="ci" id="tbgh" placeholder="#ffffff" oninput="syncClr('tbgc','tbgh')"></div>
+    <div style="display:flex;gap:5px;margin-top:7px;">
       <button class="btn btn-primary" onclick="applyTbl()">Apply Table</button>
-      <button class="del-btn" onclick="delSel('tbl')">🗑 Delete</button>
+      <button class="del-btn" onclick="delSelected('tbl')">🗑 Delete</button>
     </div>
   </div>
-
-  <!-- ROW TAB -->
-  <div id="cp-row" style="display:none;">
-    <div class="crow"><label>Row height</label><input class="ci" id="rh" placeholder="40px or auto"></div>
-    <div class="crow"><label>BG color</label>
-      <input type="color" id="rbgp" value="#ffffff" oninput="document.getElementById('rbgh').value=this.value" style="width:28px;height:22px;border:1px solid var(--border);border-radius:3px;cursor:pointer;padding:1px;">
-      <input class="ci" id="rbgh" placeholder="#ffffff" style="flex:1;" oninput="syncCP('rbgp','rbgh')">
-    </div>
-    <div class="crow"><label>Font weight</label>
-      <select class="ci" id="rfw"><option value="">Default</option><option value="bold">Bold</option><option value="normal">Normal</option></select>
-    </div>
-    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;">
+  <div id="cp-r" style="display:none;">
+    <div class="crow"><label>Height</label><input class="ci" id="rht" placeholder="40px or auto"></div>
+    <div class="crow"><label>BG</label><input type="color" class="cp" id="rbgc" value="#ffffff"><input class="ci" id="rbgh" placeholder="#ffffff" oninput="syncClr('rbgc','rbgh')"></div>
+    <div class="crow"><label>Font weight</label><select class="ci" id="rfw"><option value="">Default</option><option value="bold">Bold</option><option value="normal">Normal</option></select></div>
+    <div style="display:flex;gap:5px;margin-top:7px;">
       <button class="btn btn-primary" onclick="applyRow()">Apply Row</button>
       <button class="btn btn-ghost" onclick="tblOp('addRow')">+ Row</button>
       <button class="btn btn-ghost" onclick="tblOp('delRow')">− Row</button>
     </div>
   </div>
-
-  <!-- CELL TAB -->
-  <div id="cp-cell" style="display:none;">
-    <div class="crow"><label>BG color</label>
-      <input type="color" id="cbgp" value="#ffffff" oninput="document.getElementById('cbgh').value=this.value" style="width:28px;height:22px;border:1px solid var(--border);border-radius:3px;cursor:pointer;padding:1px;">
-      <input class="ci" id="cbgh" placeholder="#ffffff" style="flex:1;" oninput="syncCP('cbgp','cbgh')">
-    </div>
+  <div id="cp-c" style="display:none;">
+    <div class="crow"><label>BG</label><input type="color" class="cp" id="cbgc" value="#ffffff"><input class="ci" id="cbgh" placeholder="#ffffff" oninput="syncClr('cbgc','cbgh')"></div>
     <div class="crow"><label>Width</label><input class="ci" id="cw" placeholder="120px or 25%"></div>
     <div class="crow"><label>Height</label><input class="ci" id="ch" placeholder="40px"></div>
-    <div class="crow"><label>Text align</label>
-      <select class="ci" id="calign"><option value="">Default</option><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select>
-    </div>
-    <div class="crow"><label>Vert align</label>
-      <select class="ci" id="cvalign"><option value="">Default</option><option value="top">Top</option><option value="middle">Middle</option><option value="bottom">Bottom</option></select>
-    </div>
-    <div class="crow"><label>Border</label><input class="ci" id="cborder" placeholder="1px solid #ccc"></div>
+    <div class="crow"><label>Text align</label><select class="ci" id="cta"><option value="">Default</option><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
+    <div class="crow"><label>Vert align</label><select class="ci" id="cva"><option value="">Default</option><option value="top">Top</option><option value="middle">Middle</option><option value="bottom">Bottom</option></select></div>
+    <div class="crow"><label>Border</label><input class="ci" id="cbdr" placeholder="1px solid #ccc"></div>
     <div class="crow"><label>Font size</label><input class="ci" id="cfs" placeholder="14px"></div>
-    <div class="crow"><label>Font color</label>
-      <input type="color" id="cfcp" value="#000000" oninput="document.getElementById('cfch').value=this.value" style="width:28px;height:22px;border:1px solid var(--border);border-radius:3px;cursor:pointer;padding:1px;">
-      <input class="ci" id="cfch" placeholder="#000000" style="flex:1;" oninput="syncCP('cfcp','cfch')">
-    </div>
-    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;">
+    <div class="crow"><label>Font color</label><input type="color" class="cp" id="cfcc" value="#000000"><input class="ci" id="cfch" placeholder="#000000" oninput="syncClr('cfcc','cfch')"></div>
+    <div style="display:flex;gap:5px;margin-top:7px;flex-wrap:wrap;">
       <button class="btn btn-primary" onclick="applyCell()">Apply Cell</button>
       <button class="btn btn-ghost" onclick="tblOp('addCol')">+ Col</button>
       <button class="btn btn-ghost" onclick="tblOp('delCol')">− Col</button>
@@ -361,46 +331,44 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
   </div>
 </div>
 
-<!-- LINK MODAL — single popup with URL + text -->
+<!-- LINK MODAL -->
 <div class="overlay" id="linkModal">
-  <div class="modal" style="width:380px;">
-    <div class="modal-title">🔗 Insert / Edit Link</div>
+  <div class="modal" style="width:360px;">
+    <div class="modal-title">🔗 Insert Link</div>
     <span class="mi-label">Link Text</span>
-    <input class="mi" id="lnk-text" placeholder="Click here">
+    <input class="mi" id="lnk-txt" placeholder="Click here">
     <span class="mi-label">URL</span>
-    <input class="mi" id="lnk-url" placeholder="https://example.com">
-    <span class="mi-label">Color (optional)</span>
-    <div style="display:flex;gap:7px;align-items:center;margin-bottom:8px;">
-      <input type="color" id="lnk-color" value="#5b4de0" style="width:36px;height:28px;border:1px solid var(--border);border-radius:4px;cursor:pointer;padding:1px;">
-      <span style="font-size:11px;color:var(--muted)">Default: #5b4de0</span>
+    <input class="mi" id="lnk-url" placeholder="https://example.com" onkeydown="if(event.key==='Enter')insertLink()">
+    <span class="mi-label">Color</span>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <input type="color" id="lnk-clr" value="#5b4de0" style="width:36px;height:28px;border:1px solid var(--border);border-radius:4px;cursor:pointer;padding:1px;">
+      <span style="font-size:11px;color:var(--muted);">Default #5b4de0</span>
     </div>
     <div class="mfooter">
       <button class="btn btn-ghost" onclick="closeModal('linkModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="insertLink()">Insert Link</button>
+      <button class="btn btn-primary" onclick="insertLink()">Insert</button>
     </div>
   </div>
 </div>
 
-<!-- IMAGE MODAL — URL and Drive only (no upload/base64 to avoid char limit) -->
+<!-- IMAGE MODAL -->
 <div class="overlay" id="imgModal">
   <div class="modal">
     <div class="modal-title">🖼 Insert Image</div>
     <div class="mtabs">
-      <div class="mtab on" id="mt-url" onclick="switchMTab('url')">Image URL</div>
-      <div class="mtab" id="mt-drive" onclick="switchMTab('drive')">Google Drive</div>
+      <div class="mtab on" id="mt-url" onclick="imgTab('url')">Image URL</div>
+      <div class="mtab" id="mt-drv" onclick="imgTab('drv')">Google Drive</div>
     </div>
     <div id="mp-url">
-      <div class="dnote">Paste any public image URL. Hosted on your website, CDN, or any public server.</div>
-      <input class="mi" id="m-url" placeholder="https://example.com/image.jpg" oninput="prvUrl()">
-      <img class="iprev" id="m-url-p">
+      <div class="dnote">Paste any public image URL (website, CDN, etc.)</div>
+      <input class="mi" id="m-url" placeholder="https://…" oninput="prvUrl()">
+      <img class="iprev" id="m-urlp">
     </div>
-    <div id="mp-drive" style="display:none;">
-      <div class="dnote"><strong>⚠ Share setting must be:</strong> "Anyone with the link can view"<br>
-      Paste your Drive share link — auto-converted to direct image URL.<br>
-      <span style="color:var(--green);font-size:10px;">Works best for logos and banners. Recipients must have internet access to view.</span></div>
-      <input class="mi" id="m-drive" placeholder="https://drive.google.com/file/d/FILE_ID/view…" oninput="prvDrive()">
-      <img class="iprev" id="m-drive-p">
-      <div id="m-drive-u" style="font-size:10px;color:var(--green);margin-bottom:6px;display:none;word-break:break-all;"></div>
+    <div id="mp-drv" style="display:none;">
+      <div class="dnote"><strong>⚠ Share:</strong> "Anyone with the link can view"<br>Paste Drive share link — auto-converted to direct URL.</div>
+      <input class="mi" id="m-drv" placeholder="https://drive.google.com/file/d/…" oninput="prvDrv()">
+      <img class="iprev" id="m-drvp">
+      <div id="m-drvu" style="font-size:10px;color:var(--green);margin-bottom:6px;display:none;word-break:break-all;"></div>
     </div>
     <input class="mi" id="m-alt" placeholder="Alt text (optional)">
     <div style="display:flex;gap:6px;">
@@ -409,21 +377,21 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
     </div>
     <div class="mfooter">
       <button class="btn btn-ghost" onclick="closeModal('imgModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="insertImg()">Insert</button>
+      <button class="btn btn-primary" onclick="insertImg()">Insert Image</button>
     </div>
   </div>
 </div>
 
 <!-- TABLE MODAL -->
 <div class="overlay" id="tblModal">
-  <div class="modal" style="width:340px;">
+  <div class="modal" style="width:330px;">
     <div class="modal-title">⊞ Insert Table</div>
-    <div class="crow"><label>Rows</label><input class="ci" id="t-rows" type="number" value="3" min="1" max="30"></div>
-    <div class="crow"><label>Columns</label><input class="ci" id="t-cols" type="number" value="3" min="1" max="20"></div>
+    <div class="crow"><label>Rows</label><input class="ci" id="t-r" type="number" value="3" min="1" max="30"></div>
+    <div class="crow"><label>Columns</label><input class="ci" id="t-c" type="number" value="3" min="1" max="20"></div>
     <div class="crow"><label>Width</label><input class="ci" id="t-w" value="100%"></div>
-    <div class="crow"><label>Header row</label><input type="checkbox" id="t-hdr" checked style="accent-color:var(--accent);width:14px;height:14px;cursor:pointer;"></div>
-    <div class="crow"><label>Border</label><input class="ci" id="t-bdr" value="1px solid #cccccc"></div>
-    <div class="crow"><label>Cell pad</label><input class="ci" id="t-pad" value="8px 12px"></div>
+    <div class="crow"><label>Header row</label><input type="checkbox" id="t-h" checked style="accent-color:var(--accent);width:14px;height:14px;cursor:pointer;"></div>
+    <div class="crow"><label>Border</label><input class="ci" id="t-b" value="1px solid #cccccc"></div>
+    <div class="crow"><label>Cell pad</label><input class="ci" id="t-p" value="8px 12px"></div>
     <div class="crow"><label>Header BG</label><input type="color" id="t-hbg" value="#f0f0f5" style="width:36px;height:22px;border:1px solid var(--border);border-radius:3px;cursor:pointer;padding:1px;"></div>
     <div class="mfooter">
       <button class="btn btn-ghost" onclick="closeModal('tblModal')">Cancel</button>
@@ -435,400 +403,301 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
 <div class="toast" id="toast"><span id="t-ico">✓</span><span id="t-msg">Done</span></div>
 
 <script>
-var edDoc=null,selImg=null,selTbl=null,selCell=null,selRow=null;
-var curMTab='url',activeTab='code',curCtxTab='tbl';
+'use strict';
+// ─── STATE ───
+var selImg=null,selTbl=null,selCell=null,selRow=null;
+var curImgTab='url',activeTab='code',curCtxTab='t';
+var savedRange=null; // saved selection before modal opens
 
-// ══════════════════════════════════════════
-//  EDITOR IFRAME INIT
-// ══════════════════════════════════════════
-function initEditor(){
-  var frame=document.getElementById('edFrame');
-  edDoc=frame.contentDocument||frame.contentWindow.document;
-  edDoc.open();
-  edDoc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>\
-body{font-family:Arial,sans-serif;font-size:14px;line-height:1.75;color:#1a1a2e;padding:22px 26px;margin:0;min-height:100%;}\
-img{max-width:100%;height:auto;cursor:default;border:2px solid transparent;box-sizing:border-box;display:inline-block;}\
-img:hover{outline:2px dashed #7c6af7;outline-offset:2px;}\
-img.sel{outline:2px solid #7c6af7!important;outline-offset:2px;}\
-.img-wrap{display:inline-block;position:relative;vertical-align:bottom;line-height:0;}\
-.img-wrap .rh{position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;\
-  background:#7c6af7;cursor:nwse-resize;border-radius:3px 0 2px 0;display:none;z-index:5;}\
-.img-wrap:hover .rh,.img-wrap.sel .rh{display:block;}\
-.img-wrap .sz{position:absolute;top:4px;left:4px;background:rgba(0,0,0,.65);color:#fff;\
-  font-size:9px;padding:1px 5px;border-radius:3px;display:none;font-family:monospace;pointer-events:none;}\
-.img-wrap.resizing .sz{display:block;}\
-table{border-collapse:collapse;margin:10px 0;}\
-td,th{border:1px solid #ccc;padding:7px 10px;min-width:30px;position:relative;}\
-th{background:#f0f0f5;font-weight:600;}\
-table.sel-tbl td,table.sel-tbl th{outline:1px solid #7c6af7;outline-offset:-1px;}\
-td.sel-cell,th.sel-cell{background:rgba(124,106,247,.08)!important;}\
-.cr{position:absolute;top:0;right:-3px;width:6px;height:100%;cursor:col-resize;z-index:4;}\
-.cr:hover,.cr.active{background:rgba(124,106,247,.4);}\
-a{color:#5b4de0;}\
-</style></head><body></body></html>');
-  edDoc.close();
-  edDoc.designMode='on';
+var ED = document.getElementById('editor');
 
-  edDoc.addEventListener('click',function(e){
-    var img=e.target.closest('img');
-    var tbl=e.target.closest('table');
-    var td=e.target.closest('td,th');
-    if(img){e.preventDefault();openImgCtx(img,e);return;}
-    if(tbl&&td){openTblCtx(tbl,td,e);return;}
-    if(tbl){openTblCtx(tbl,null,e);return;}
-    closeCtx('imgCtx');closeCtx('tblCtx');
-  });
-  edDoc.addEventListener('keyup',updateStats);
-  edDoc.addEventListener('input',updateStats);
-
-  setupImageResize();
-  setupColResize();
+// ─── SAVE/RESTORE SELECTION ───
+// Modals steal focus from editor; save range before opening so we can restore
+function saveSelection(){
+  var sel=window.getSelection();
+  if(sel&&sel.rangeCount>0) savedRange=sel.getRangeAt(0).cloneRange();
 }
-window.addEventListener('load',initEditor);
-
-// ══════════════════════════════════════════
-//  IMAGE DRAG RESIZE — smooth
-// ══════════════════════════════════════════
-function setupImageResize(){
-  new MutationObserver(function(){
-    edDoc.body.querySelectorAll('img:not(.wrapped)').forEach(wrapImg);
-  }).observe(edDoc.body,{childList:true,subtree:true});
-}
-function wrapImg(img){
-  if(img.classList.contains('wrapped')||img.closest('.img-wrap'))return;
-  img.classList.add('wrapped');
-  var wrap=edDoc.createElement('span');
-  wrap.className='img-wrap';
-  wrap.contentEditable='false';
-  img.parentNode.insertBefore(wrap,img);
-  wrap.appendChild(img);
-  var rh=edDoc.createElement('span');rh.className='rh';wrap.appendChild(rh);
-  var sz=edDoc.createElement('span');sz.className='sz';wrap.appendChild(sz);
-  var startX,startY,startW,startH,aspect;
-  rh.addEventListener('mousedown',function(e){
-    e.preventDefault();e.stopPropagation();
-    startX=e.clientX;startY=e.clientY;
-    startW=img.offsetWidth||img.naturalWidth||200;
-    startH=img.offsetHeight||img.naturalHeight||150;
-    aspect=startH/startW;
-    wrap.classList.add('resizing','sel');
-    sz.textContent=startW+'×'+startH;
-    var onMove=function(ev){
-      var dw=ev.clientX-startX;
-      var newW=Math.max(20,startW+dw);
-      img.style.width=newW+'px';
-      if(ev.shiftKey){img.style.height=Math.round(newW*aspect)+'px';sz.textContent=newW+'×'+Math.round(newW*aspect);}
-      else{var dh=ev.clientY-startY;img.style.height=Math.max(10,startH+dh)+'px';sz.textContent=newW+'×'+Math.max(10,startH+dh);}
-    };
-    var onUp=function(){
-      wrap.classList.remove('resizing');
-      if(selImg===img){document.getElementById('iw').value=img.style.width;document.getElementById('ih').value=img.style.height;}
-      edDoc.removeEventListener('mousemove',onMove);
-      edDoc.removeEventListener('mouseup',onUp);
-    };
-    edDoc.addEventListener('mousemove',onMove);
-    edDoc.addEventListener('mouseup',onUp);
-  });
+function restoreSelection(){
+  if(!savedRange) return;
+  var sel=window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(savedRange);
+  ED.focus();
 }
 
-// ══════════════════════════════════════════
-//  COLUMN DRAG RESIZE — smooth
-// ══════════════════════════════════════════
-function setupColResize(){
-  new MutationObserver(function(){
-    edDoc.body.querySelectorAll('table:not([data-cr])').forEach(addCR);
-  }).observe(edDoc.body,{childList:true,subtree:true});
-}
-function addCR(tbl){
-  tbl.dataset.cr='1';
-  var cover=document.getElementById('dragCover');
-  var frame=document.getElementById('edFrame');
-  var rebind=function(){
-    tbl.querySelectorAll('td,th').forEach(function(cell){
-      if(!cell.querySelector('.cr')){
-        var r=edDoc.createElement('div');r.className='cr';r.contentEditable='false';
-        cell.appendChild(r);
-        r.addEventListener('mousedown',function(e){
-          e.preventDefault();e.stopPropagation();
-          // startX is in iframe coords; convert to page coords for parent tracking
-          var frameRect=frame.getBoundingClientRect();
-          var startPageX=e.clientX+frameRect.left;
-          var startW=cell.offsetWidth;
-          r.classList.add('active');
-          cover.style.display='block';
-          cover.style.cursor='col-resize';
-          // Track on parent document so mouse leaving iframe still works
-          var onMove=function(ev){
-            var delta=ev.clientX-startPageX;
-            cell.style.width=Math.max(20,startW+delta)+'px';
-          };
-          var onUp=function(){
-            r.classList.remove('active');
-            cover.style.display='none';
-            cover.style.cursor='col-resize';
-            document.removeEventListener('mousemove',onMove);
-            document.removeEventListener('mouseup',onUp);
-          };
-          document.addEventListener('mousemove',onMove);
-          document.addEventListener('mouseup',onUp);
-        });
-      }
-    });
-  };
-  rebind();
-  new MutationObserver(rebind).observe(tbl,{childList:true,subtree:true});
+// ─── CORE execCommand ───
+// All toolbar buttons call this — runs directly on the page document
+function cmd(command, value){
+  ED.focus();
+  document.execCommand(command, false, value || null);
+  updateStats();
 }
 
-// ══════════════════════════════════════════
-//  SMOOTH SPLITTER DRAG
-//  Key: show dragCover over iframe during drag
-// ══════════════════════════════════════════
-(function(){
-  var spl=document.getElementById('splitter');
-  var ep=document.getElementById('epane');
-  var ws=document.querySelector('.workspace');
-  var cover=document.getElementById('dragCover');
-  var dragging=false,startX,startW;
-  spl.addEventListener('mousedown',function(e){
-    dragging=true;startX=e.clientX;startW=ep.offsetWidth;
-    spl.classList.add('dragging');
-    cover.style.display='block'; // blocks iframe from capturing events
-    e.preventDefault();
-  });
-  document.addEventListener('mousemove',function(e){
-    if(!dragging)return;
-    var wsRect=ws.getBoundingClientRect();
-    var newW=startW+(e.clientX-startX);
-    var minW=180,maxW=wsRect.width-180-spl.offsetWidth;
-    ep.style.width=Math.max(minW,Math.min(maxW,newW))+'px';
-  });
-  document.addEventListener('mouseup',function(){
-    if(dragging){dragging=false;spl.classList.remove('dragging');cover.style.display='none';}
-  });
-})();
-
-// ══════════════════════════════════════════
-//  UNDO / REDO
-// ══════════════════════════════════════════
-function doUndo(){
-  if(!edDoc)return;
-  edDoc.execCommand('undo',false,null);
-  edDoc.body.focus();updateStats();
-}
-function doRedo(){
-  if(!edDoc)return;
-  edDoc.execCommand('redo',false,null);
-  edDoc.body.focus();updateStats();
+// ─── FONT FAMILY ───
+function applyFont(family){
+  if(!family) return;
+  restoreSelection();
+  var sel=window.getSelection();
+  if(!sel||!sel.rangeCount) return;
+  if(sel.isCollapsed){ showToast('Select text first','⚠'); return; }
+  document.execCommand('fontName', false, family);
+  // execCommand fontName adds <font face=""> — wrap also with span for email safety
+  updateStats();
 }
 
-// ══════════════════════════════════════════
-//  execCommand on iframe doc
-// ══════════════════════════════════════════
-function ec(cmd,val){
-  if(!edDoc)return;
-  edDoc.execCommand(cmd,false,val||null);
-  edDoc.body.focus();updateStats();
+// ─── FONT SIZE ───
+function applySize(){
+  var v=parseInt(document.getElementById('fsz').value);
+  if(!v||v<1){ showToast('Enter a size','⚠'); return; }
+  applyFontSizePx(v);
 }
-// ══════════════════════════════════════════
-//  FONT FAMILY + SIZE — direct span wrapping
-//  (execCommand fontName/fontSize unreliable
-//   across browsers in designMode iframes)
-// ══════════════════════════════════════════
-function wrapSelectionWithStyle(styleObj){
-  if(!edDoc)return;
-  var sel=edDoc.getSelection();
-  if(!sel||!sel.rangeCount)return;
-  if(sel.isCollapsed){showToast('Select text first','⚠');return;}
+function applyFontSizePx(px){
+  if(!px) return;
+  document.getElementById('fsz').value=parseInt(px);
+  restoreSelection();
+  wrapStyle({'fontSize':parseInt(px)+'px'});
+}
+
+// ─── COLOR ───
+function applyColor(type){
+  restoreSelection();
+  var clr=document.getElementById(type==='fore'?'txClr':'bgClr').value;
+  wrapStyle(type==='fore'?{'color':clr}:{'backgroundColor':clr});
+}
+
+// ─── GENERIC STYLE WRAPPER ───
+// Wraps selected text in a span with given styles
+// Works even when execCommand is blocked
+function wrapStyle(styles){
+  ED.focus();
+  var sel=window.getSelection();
+  if(!sel||!sel.rangeCount){ showToast('Select text first','⚠'); return; }
+  if(sel.isCollapsed){ showToast('Select text first','⚠'); return; }
   var range=sel.getRangeAt(0);
-  var span=edDoc.createElement('span');
-  Object.keys(styleObj).forEach(function(k){span.style[k]=styleObj[k];});
+  var span=document.createElement('span');
+  Object.keys(styles).forEach(function(k){ span.style[k]=styles[k]; });
   try{
     range.surroundContents(span);
   } catch(e){
-    // Range spans multiple elements — extract and wrap
     var frag=range.extractContents();
     span.appendChild(frag);
     range.insertNode(span);
   }
-  // Restore selection
-  var newRange=edDoc.createRange();
-  newRange.selectNodeContents(span);
-  sel.removeAllRanges();sel.addRange(newRange);
-}
-
-function applyFont(fontFamily){
-  if(!fontFamily)return;
-  wrapSelectionWithStyle({'fontFamily':fontFamily});
-}
-
-function applyFontSize(px){
-  var v=parseInt(px);
-  if(!v||v<1)return;
-  var pxVal=v+'px';
-  document.getElementById('fontSizeInput').value=v;
-  wrapSelectionWithStyle({'fontSize':pxVal});
-}
-
-function applyTextColor(){
-  var color=document.getElementById('txtColorPicker').value;
-  wrapSelectionWithStyle({'color':color});
-}
-
-function applyBgColor(){
-  var color=document.getElementById('bgColorPicker').value;
-  wrapSelectionWithStyle({'backgroundColor':color});
-}
-function insertNode(node){
-  if(!edDoc)return;
-  edDoc.body.focus();
-  var sel=edDoc.getSelection();
-  if(sel&&sel.rangeCount){
-    var r=sel.getRangeAt(0);r.collapse(false);r.insertNode(node);
-    r.setStartAfter(node);r.collapse(true);sel.removeAllRanges();sel.addRange(r);
-  } else edDoc.body.appendChild(node);
-  if(node.nodeName==='IMG')wrapImg(node);
-  else if(node.querySelectorAll){node.querySelectorAll('img').forEach(wrapImg);node.querySelectorAll('table').forEach(addCR);}
-  if(node.nodeName==='TABLE')addCR(node);
+  sel.removeAllRanges();
+  var nr=document.createRange();
+  nr.selectNodeContents(span);
+  sel.addRange(nr);
   updateStats();
 }
+
+// ─── INSERT HELPERS ───
+function insertNodeAtCursor(node){
+  ED.focus();
+  var sel=window.getSelection();
+  if(sel&&sel.rangeCount){
+    var r=sel.getRangeAt(0); r.collapse(false);
+    r.insertNode(node);
+    r.setStartAfter(node); r.collapse(true);
+    sel.removeAllRanges(); sel.addRange(r);
+  } else { ED.appendChild(node); }
+  updateStats();
+}
+
 function doHR(){
-  var hr=edDoc.createElement('hr');hr.style.cssText='border:none;border-top:1px solid #e0e0e0;margin:14px 0;';
-  insertNode(hr);
+  restoreSelection();
+  var hr=document.createElement('hr');
+  hr.style.cssText='border:none;border-top:1px solid #e0e0e0;margin:14px 0;';
+  insertNodeAtCursor(hr);
 }
 
-// ══════════════════════════════════════════
-//  LINK MODAL
-// ══════════════════════════════════════════
-function openLinkModal(){
-  // Pre-fill if text is selected
-  var sel=edDoc?edDoc.getSelection():null;
-  var txt=sel&&!sel.isCollapsed?sel.toString():'';
-  document.getElementById('lnk-text').value=txt;
-  document.getElementById('lnk-url').value='https://';
-  openModal('linkModal');
-  setTimeout(function(){document.getElementById(txt?'lnk-url':'lnk-text').focus();},80);
+// ─── PASTE — keep rich formatting ───
+ED.addEventListener('paste', function(e){
+  // Let browser handle native rich paste — it preserves formatting perfectly
+  // We just update stats after
+  setTimeout(function(){ updateStats(); bindColResizers(); }, 100);
+});
+
+// ─── COLUMN RESIZE — pure CSS + JS, no iframe issues ───
+function bindColResizers(){
+  ED.querySelectorAll('table').forEach(function(tbl){
+    if(tbl.dataset.crbound) return;
+    tbl.dataset.crbound='1';
+    bindTableResizers(tbl);
+  });
 }
-function insertLink(){
-  var url=document.getElementById('lnk-url').value.trim();
-  var txt=document.getElementById('lnk-text').value.trim()||url;
-  var color=document.getElementById('lnk-color').value||'#5b4de0';
-  if(!url){showToast('Enter a URL','⚠');return;}
-  var a=edDoc.createElement('a');
-  a.href=url;a.target='_blank';a.style.color=color;a.textContent=txt;
-  insertNode(a);
-  closeModal('linkModal');
-  showToast('Link inserted','🔗');
+function bindTableResizers(tbl){
+  tbl.querySelectorAll('td,th').forEach(function(cell){
+    if(cell.querySelector('.cr')) return;
+    var r=document.createElement('div');
+    r.className='cr'; r.contentEditable='false';
+    r.title='Drag to resize column';
+    cell.appendChild(r);
+    r.addEventListener('mousedown',function(e){
+      e.preventDefault(); e.stopPropagation();
+      var startX=e.pageX, startW=cell.offsetWidth;
+      r.style.background='rgba(124,106,247,.6)';
+      function onMove(ev){
+        cell.style.width=Math.max(20, startW+(ev.pageX-startX))+'px';
+      }
+      function onUp(){
+        r.style.background='';
+        document.removeEventListener('mousemove',onMove);
+        document.removeEventListener('mouseup',onUp);
+      }
+      document.addEventListener('mousemove',onMove);
+      document.addEventListener('mouseup',onUp);
+    });
+  });
+  // watch for new rows/cols
+  var obs=new MutationObserver(function(){ bindTableResizers(tbl); });
+  obs.observe(tbl,{childList:true,subtree:true});
 }
 
-// ══════════════════════════════════════════
-//  STATS
-// ══════════════════════════════════════════
+// ─── IMAGE RESIZE ───
+ED.addEventListener('click',function(e){
+  if(e.target.tagName==='IMG'){
+    openImgCtx(e.target,e);
+    return;
+  }
+  var td=e.target.closest('td,th');
+  var tbl=e.target.closest('table');
+  if(tbl){ openTblCtx(tbl,td,e); return; }
+  closeCtx('imgCtx'); closeCtx('tblCtx');
+});
+
+// Bind image drag-resize after paste or insert
+function bindImageResize(){
+  ED.querySelectorAll('img').forEach(function(img){
+    if(img.dataset.resizable) return;
+    img.dataset.resizable='1';
+    // We use a corner handle approach via CSS :after isn't possible on img
+    // Instead: mousedown on bottom-right corner area of the img
+    img.addEventListener('mousedown',function(e){
+      var r=img.getBoundingClientRect();
+      // Only activate if click is in bottom-right 16x16 corner
+      if(e.clientX > r.right-16 && e.clientY > r.bottom-16){
+        e.preventDefault();
+        var startX=e.clientX, startY=e.clientY;
+        var startW=img.offsetWidth||img.naturalWidth||200;
+        var startH=img.offsetHeight||img.naturalHeight||150;
+        var aspect=startH/(startW||1);
+        img.style.cursor='nwse-resize';
+        img.style.outline='2px solid #7c6af7';
+        function onMove(ev){
+          var nw=Math.max(20,startW+(ev.clientX-startX));
+          img.style.width=nw+'px';
+          img.style.height=(e.shiftKey?Math.round(nw*aspect):Math.max(10,startH+(ev.clientY-startY)))+'px';
+        }
+        function onUp(){
+          img.style.cursor='pointer';
+          if(selImg===img){ document.getElementById('iw').value=img.style.width; document.getElementById('ih').value=img.style.height; }
+          document.removeEventListener('mousemove',onMove);
+          document.removeEventListener('mouseup',onUp);
+        }
+        document.addEventListener('mousemove',onMove);
+        document.addEventListener('mouseup',onUp);
+      }
+    });
+  });
+}
+
+// Watch editor for new images/tables
+new MutationObserver(function(){
+  bindImageResize();
+  bindColResizers();
+}).observe(ED,{childList:true,subtree:true});
+
+// ─── SPLITTER ───
+(function(){
+  var spl=document.getElementById('spl');
+  var ep=document.getElementById('epane');
+  var ws=document.querySelector('.workspace');
+  var dragging=false,sx,sw;
+  spl.addEventListener('mousedown',function(e){dragging=true;sx=e.clientX;sw=ep.offsetWidth;spl.classList.add('active');e.preventDefault();});
+  document.addEventListener('mousemove',function(e){
+    if(!dragging)return;
+    var rect=ws.getBoundingClientRect();
+    var nw=Math.max(200,Math.min(sw+(e.clientX-sx),rect.width-205));
+    ep.style.width=nw+'px';
+  });
+  document.addEventListener('mouseup',function(){if(dragging){dragging=false;spl.classList.remove('active');}});
+})();
+
+// ─── STATS ───
 function updateStats(){
-  if(!edDoc)return;
-  var html=edDoc.body.innerHTML||'';
-  var txt=edDoc.body.innerText||'';
+  var html=ED.innerHTML||'';
+  var txt=ED.innerText||'';
   var w=txt.trim()?txt.trim().split(/\s+/).length:0;
-  document.getElementById('wc').textContent=w+' w';
-  document.getElementById('ic').textContent=(html.match(/<img/gi)||[]).length+'🖼';
-  document.getElementById('tc').textContent=(html.match(/<table/gi)||[]).length+'⊞';
-  document.getElementById('f-img').textContent=(html.match(/<img/gi)||[]).length;
-  document.getElementById('f-tbl').textContent=(html.match(/<table/gi)||[]).length;
+  document.getElementById('wc').textContent=w+'w';
+  var imgs=(html.match(/<img/gi)||[]).length;
+  var tbls=(html.match(/<table/gi)||[]).length;
+  document.getElementById('ic').textContent=imgs+'🖼';
+  document.getElementById('tc').textContent=tbls+'⊞';
+  document.getElementById('f-img').textContent=imgs;
+  document.getElementById('f-tbl').textContent=tbls;
   document.getElementById('f-lnk').textContent=(html.match(/<a /gi)||[]).length;
 }
 
-// ══════════════════════════════════════════
-//  SPECIAL CHARACTER FIXER
-//  Converts AI/Word chars → email-safe HTML entities
-// ══════════════════════════════════════════
-function fixSpecialChars(html){
-  var map={
-    '\u20B9':'&#8377;',   // ₹ Indian Rupee
-    '\u2019':'&#39;',     // ' right single quote → apostrophe
-    '\u2018':'&#39;',     // ' left single quote
-    '\u201C':'&ldquo;',   // " left double quote
-    '\u201D':'&rdquo;',   // " right double quote
-    '\u2013':'&ndash;',   // – en dash
-    '\u2014':'&mdash;',   // — em dash
-    '\u2026':'&hellip;',  // … ellipsis
-    '\u00A0':'&nbsp;',    // non-breaking space
-    '\u00B7':'&middot;',  // · middle dot
-    '\u2022':'&#8226;',   // • bullet
-    '\u00AE':'&reg;',     // ® registered
-    '\u2122':'&trade;',   // ™ trademark
-    '\u00A9':'&copy;',    // © copyright
-    '\u00BD':'&frac12;',  // ½
-    '\u00BC':'&frac14;',  // ¼
-    '\u00BE':'&frac34;',  // ¾
-    '\u00D7':'&times;',   // ×
-    '\u00F7':'&divide;',  // ÷
-    '\u2264':'&le;',      // ≤
-    '\u2265':'&ge;',      // ≥
-    '\u2260':'&ne;',      // ≠
-    '\u00B0':'&deg;',     // °
-    '\u00B1':'&plusmn;'   // ±
-  };
-  // Only fix text nodes, not inside attribute values or tag brackets
-  // We do a safe replacement that avoids breaking existing HTML entities
-  Object.keys(map).forEach(function(ch){
-    // Replace char when NOT already inside an & entity
-    var re=new RegExp(ch,'g');
-    html=html.replace(re,map[ch]);
-  });
-  return html;
-}
-
-// ══════════════════════════════════════════
-//  CONVERT TO HTML
-// ══════════════════════════════════════════
+// ─── CONVERT ───
 function doConvert(){
   var btn=document.getElementById('convBtn');
-  btn.disabled=true;btn.textContent='⏳…';
+  btn.disabled=true; btn.textContent='⏳…';
   setTimeout(function(){
-    try{
-      var html=edDoc?edDoc.body.innerHTML:'';
-      if(!html||html.trim()===''){showToast('Editor is empty','⚠');btn.textContent='⚡ Convert to HTML';btn.disabled=false;return;}
-      var out=processHTML(html);
-      setOutput(out);
-      btn.textContent='✓ Done!';
-      showToast('HTML ready — '+out.length+' chars','✓');
-      setTimeout(function(){btn.textContent='⚡ Convert to HTML';btn.disabled=false;},1600);
-    }catch(e){btn.textContent='⚡ Convert to HTML';btn.disabled=false;showToast('Error: '+e.message,'✕');}
+    var html=ED.innerHTML||'';
+    if(!html.trim()){ showToast('Editor is empty','⚠'); btn.textContent='⚡ Convert to HTML'; btn.disabled=false; return; }
+    var out=processHTML(html);
+    setOut(out);
+    btn.textContent='✓ Done!';
+    showToast('HTML ready — '+out.length+' chars','✓');
+    setTimeout(function(){btn.textContent='⚡ Convert to HTML';btn.disabled=false;},1600);
   },30);
 }
 
-// ══════════════════════════════════════════
-//  MINIFIER
-// ══════════════════════════════════════════
+// ─── MINIFY ───
 function doMinify(){
   var v=document.getElementById('htmlOut').value;
   if(!v){showToast('Convert first','⚠');return;}
-  var before=v.length;
-  v=v.replace(/<!--(?!\[if)[\s\S]*?-->/g,'');
-  v=v.replace(/>\s+</g,'><');
-  v=v.replace(/\s{2,}/g,' ');
-  v=v.replace(/\s*;\s*/g,';').replace(/\s*:\s*/g,':');
-  v=v.replace(/;"/g,'"').replace(/;;/g,';');
-  v=v.replace(/\sstyle=""/g,'');
-  v=v.replace(/:0px/g,':0').replace(/:0\.0/g,':0');
-  v=v.trim();
-  setOutput(v);
-  showToast('Minified: '+before+' → '+v.length+' chars ('+(before-v.length)+' saved)','⚡');
+  var b=v.length;
+  v=v.replace(/<!--(?!\[if)[\s\S]*?-->/g,'')
+    .replace(/>\s+</g,'><').replace(/\s{2,}/g,' ')
+    .replace(/\s*;\s*/g,';').replace(/\s*:\s*/g,':')
+    .replace(/;"/g,'"').replace(/:0px/g,':0').trim();
+  setOut(v);
+  showToast('Minified: '+b+'→'+v.length+' ('+(b-v.length)+' saved)','⚡');
 }
 
-// ══════════════════════════════════════════
-//  HTML PROCESSING
-// ══════════════════════════════════════════
+// ─── HTML → EDITOR ───
+function htmlToEditor(){
+  var v=document.getElementById('htmlOut').value.trim();
+  if(!v){showToast('Paste HTML in output area first','⚠');return;}
+  if(!confirm('Replace editor content with this HTML?'))return;
+  ED.innerHTML=v;
+  setTimeout(function(){bindColResizers();bindImageResize();updateStats();},50);
+  showToast('HTML loaded into editor','↩');
+}
+
+// Make output editable
+document.getElementById('htmlOut').removeAttribute('readonly');
+document.getElementById('htmlOut').addEventListener('input',function(){updateCharCount(this.value);});
+
+function setOut(html){
+  document.getElementById('htmlOut').value=html;
+  updateCharCount(html);
+  if(activeTab==='prev') refreshPreview(html);
+}
+function updateCharCount(v){
+  var el=document.getElementById('ccount');
+  var n=v.length, pct=Math.round(n/50000*100);
+  el.textContent=n.toLocaleString()+' chars ('+pct+'% of 50k)';
+  el.className=n>45000?'char-err':n>35000?'char-warn':'';
+}
+
+// ─── HTML PROCESSING ───
 function processHTML(html){
-  // Strip resize helper elements
-  html=html.replace(/<span class="rh"[^>]*><\/span>/gi,'');
-  html=html.replace(/<span class="sz"[^>]*>[^<]*<\/span>/gi,'');
+  // Strip col resize handles before output
   html=html.replace(/<div class="cr"[^>]*><\/div>/gi,'');
-  // Unwrap img-wrap spans → just keep the img
-  html=html.replace(/<span class="img-wrap"[^>]*>([\s\S]*?)<\/span>/gi,function(m,inner){
-    var im=inner.match(/<img[^>]*>/i);return im?im[0]:'';
-  });
-  html=html.replace(/\sclass="wrapped"/gi,'');
-  html=html.replace(/\sdata-cr="[^"]*"/gi,'');
+  html=html.replace(/\sdata-cr[a-z]*="[^"]*"/gi,'');
+  html=html.replace(/\sdata-resizable="[^"]*"/gi,'');
 
   if(g('o-ms')){
     html=html.replace(/<!--\[if[\s\S]*?<!\[endif\]-->/gi,'');
@@ -838,401 +707,365 @@ function processHTML(html){
     html=html.replace(/xmlns[^=]*="[^"]*"/gi,'');
     html=html.replace(/\slang="[A-Z]{2}-[A-Z]{2}"/gi,'');
   }
-  if(g('o-cls'))html=html.replace(/\sclass="[^"]*"/gi,'');
-  if(!g('o-inline')){html=html.replace(/\sstyle="[^"]*"/gi,'');}
-  else{
+  if(g('o-cls')) html=html.replace(/\sclass="[^"]*"/gi,'');
+  if(!g('o-inline')){
+    html=html.replace(/\sstyle="[^"]*"/gi,'');
+  } else {
     html=html.replace(/\sstyle="([^"]*)"/gi,function(m,s){
       var c=s.split(';').filter(function(p){return p.trim()&&!p.trim().toLowerCase().startsWith('mso-');}).join(';');
       return c?' style="'+c+'"':'';
     });
   }
-  if(g('o-font'))html=html.replace(/<\/?font[^>]*>/gi,'');
-  if(g('o-span')){html=html.replace(/<span[^>]*>\s*<\/span>/gi,'');html=html.replace(/<span>([\s\S]*?)<\/span>/gi,'$1');}
+  if(g('o-font')) html=html.replace(/<\/?font[^>]*>/gi,'');
+  if(g('o-span')){
+    html=html.replace(/<span[^>]*>\s*<\/span>/gi,'');
+    html=html.replace(/<span>([\s\S]*?)<\/span>/gi,'$1');
+  }
   html=html.replace(/<p[^>]*>\s*(&nbsp;|\u00a0)?\s*<\/p>/gi,'');
   html=html.replace(/<div[^>]*>\s*<\/div>/gi,'');
-
-  // Fix special chars BEFORE wrapping
-  if(g('o-fixchars'))html=fixSpecialChars(html);
-
+  if(g('o-fix')) html=fixChars(html);
   if(g('o-wrap')){
     html='<table width="600" cellpadding="0" cellspacing="0" border="0" align="center" style="width:600px;max-width:600px;">\n  <tr>\n    <td style="font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:#333333;padding:20px;">\n'+html+'\n    </td>\n  </tr>\n</table>';
   }
-  if(g('o-pretty'))html=prettyPrint(html);
+  if(g('o-pretty')) html=pretty(html);
   return html.trim();
 }
 function g(id){return document.getElementById(id).checked;}
 
-function prettyPrint(html){
+function fixChars(html){
+  var m={'\u20B9':'&#8377;','\u2019':'&#39;','\u2018':'&#39;','\u201C':'&ldquo;','\u201D':'&rdquo;','\u2013':'&ndash;','\u2014':'&mdash;','\u2026':'&hellip;','\u2022':'&#8226;','\u00AE':'&reg;','\u2122':'&trade;','\u00A9':'&copy;','\u00B0':'&deg;','\u00B1':'&plusmn;','\u00D7':'&times;','\u00F7':'&divide;'};
+  Object.keys(m).forEach(function(c){html=html.replace(new RegExp(c,'g'),m[c]);});
+  return html;
+}
+
+function pretty(html){
   var IL={a:1,abbr:1,b:1,br:1,button:1,cite:1,code:1,em:1,i:1,img:1,input:1,kbd:1,label:1,q:1,s:1,samp:1,select:1,small:1,span:1,strong:1,sub:1,sup:1,textarea:1,time:1,u:1,'var':1};
   var res='',ind=0,tab='  ';
   html=html.replace(/>\s+</g,'><').trim();
-  var toks=html.match(/(<[^>]+>|[^<]+)/g)||[];
-  toks.forEach(function(t){
-    if(t.startsWith('</')){var tag=(t.match(/<\/([a-z0-9]+)/i)||[])[1];tag=tag?tag.toLowerCase():'';if(!IL[tag]){ind=Math.max(0,ind-1);res+='\n'+tab.repeat(ind)+t;}else res+=t;}
-    else if(t.startsWith('<')){var tag=(t.match(/<([a-z0-9]+)/i)||[])[1];tag=tag?tag.toLowerCase():'';var self=t.endsWith('/>')||['br','hr','img','input','meta','link'].indexOf(tag)>=0;if(!IL[tag]){res+='\n'+tab.repeat(ind)+t;if(!self)ind++;}else res+=t;}
+  (html.match(/(<[^>]+>|[^<]+)/g)||[]).forEach(function(t){
+    if(t.startsWith('</')){var tg=(t.match(/<\/([a-z0-9]+)/i)||[])[1];tg=tg?tg.toLowerCase():'';if(!IL[tg]){ind=Math.max(0,ind-1);res+='\n'+tab.repeat(ind)+t;}else res+=t;}
+    else if(t.startsWith('<')){var tg=(t.match(/<([a-z0-9]+)/i)||[])[1];tg=tg?tg.toLowerCase():'';var self=t.endsWith('/>')||['br','hr','img','input','meta','link'].indexOf(tg)>=0;if(!IL[tg]){res+='\n'+tab.repeat(ind)+t;if(!self)ind++;}else res+=t;}
     else res+=t;
   });
   return res.trim();
 }
 
-// ══════════════════════════════════════════
-//  HTML → EDITOR
-// ══════════════════════════════════════════
-function htmlToEditor(){
-  var v=document.getElementById('htmlOut').value.trim();
-  if(!v){showToast('Paste HTML into output area first','⚠');return;}
-  if(!confirm('Load HTML into editor? Current content will be replaced.'))return;
-  edDoc.body.innerHTML=v;
-  edDoc.body.querySelectorAll('img').forEach(wrapImg);
-  edDoc.body.querySelectorAll('table').forEach(addCR);
-  updateStats();showToast('HTML loaded into editor','↩');
-}
-
-// Make output textarea editable
-document.getElementById('htmlOut').removeAttribute('readonly');
-document.getElementById('htmlOut').addEventListener('input',function(){updateCharCount(this.value);});
-
-function setOutput(html){
-  document.getElementById('htmlOut').value=html;
-  updateCharCount(html);
-  if(activeTab==='prev')refreshPreview(html);
-}
-function updateCharCount(v){
-  var el=document.getElementById('ccount');
-  var n=v.length,pct=Math.round(n/50000*100);
-  el.textContent=n.toLocaleString()+' chars ('+pct+'% of 50k)';
-  el.className='';
-  if(n>45000)el.className='char-err';
-  else if(n>35000)el.className='char-warn';
-}
-
-// ══════════════════════════════════════════
-//  TABS
-// ══════════════════════════════════════════
+// ─── TABS ───
 function switchTab(t){
   activeTab=t;
   document.getElementById('tab-code').classList.toggle('on',t==='code');
   document.getElementById('tab-prev').classList.toggle('on',t==='prev');
   document.getElementById('htmlOut').style.display=t==='code'?'block':'none';
   document.getElementById('prevFrame').style.display=t==='prev'?'block':'none';
-  if(t==='prev')refreshPreview(document.getElementById('htmlOut').value);
+  if(t==='prev') refreshPreview(document.getElementById('htmlOut').value);
 }
 function refreshPreview(html){
   var f=document.getElementById('prevFrame'),d=f.contentDocument||f.contentWindow.document;
   d.open();d.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:Arial,sans-serif;padding:22px;font-size:14px;line-height:1.65;color:#333;}img{max-width:100%;}table{border-collapse:collapse;}td,th{padding:6px 10px;border:1px solid #ddd;}</style></head><body>'+html+'</body></html>');d.close();
 }
 
-// ══════════════════════════════════════════
-//  COPY / DOWNLOAD / CLEAR
-// ══════════════════════════════════════════
+// ─── COPY / DOWNLOAD / CLEAR ───
 function copyHTML(){
   var v=document.getElementById('htmlOut').value;
   if(!v){showToast('Convert first','⚠');return;}
   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(v).then(function(){showToast('Copied!','✓');}).catch(function(){fbCopy(v);});}
   else fbCopy(v);
 }
-function fbCopy(v){
-  var ta=document.createElement('textarea');ta.value=v;ta.style.cssText='position:fixed;opacity:0;top:0;left:0;';
-  document.body.appendChild(ta);ta.focus();ta.select();
-  try{document.execCommand('copy');showToast('Copied!','✓');}catch(e){showToast('Select text manually','⚠');}
-  document.body.removeChild(ta);
-}
+function fbCopy(v){var ta=document.createElement('textarea');ta.value=v;ta.style.cssText='position:fixed;opacity:0;';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');showToast('Copied!','✓');}catch(e){showToast('Select text manually','⚠');}document.body.removeChild(ta);}
 function downloadHTML(){
   var v=document.getElementById('htmlOut').value;
   if(!v){showToast('Convert first','⚠');return;}
-  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([v],{type:'text/html'}));a.download='email-template.html';a.click();showToast('Downloaded','↓');
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([v],{type:'text/html'}));a.download='email.html';a.click();showToast('Downloaded','↓');
 }
-function doClear(){
-  if(!confirm('Clear all content?'))return;
-  if(edDoc)edDoc.body.innerHTML='';
-  document.getElementById('htmlOut').value='';document.getElementById('ccount').textContent='';updateStats();
-}
+function doClear(){if(!confirm('Clear all?'))return;ED.innerHTML='';document.getElementById('htmlOut').value='';document.getElementById('ccount').textContent='';updateStats();}
 
-// ══════════════════════════════════════════
-//  IMAGE CONTEXT
-// ══════════════════════════════════════════
+// ─── IMAGE CONTEXT ───
+function onEdClick(e){/* handled via addEventListener above */}
 function openImgCtx(img,e){
   selImg=img;
-  edDoc.querySelectorAll('img').forEach(function(i){i.classList.remove('sel');var w=i.closest('.img-wrap');if(w)w.classList.remove('sel');});
-  img.classList.add('sel');var wrap=img.closest('.img-wrap');if(wrap)wrap.classList.add('sel');
+  ED.querySelectorAll('img').forEach(function(i){i.classList.remove('sel');});
+  img.classList.add('sel');
   document.getElementById('iw').value=img.style.width||img.getAttribute('width')||'';
   document.getElementById('ih').value=img.style.height||'';
   document.getElementById('ialt').value=img.alt||'';
   document.getElementById('iborder').value=img.style.border||'';
   document.getElementById('iradius').value=img.style.borderRadius||'';
   document.getElementById('ialign').value='';
-  posCtx('imgCtx',e);closeCtx('tblCtx');
+  document.getElementById('idriveurl').value='';
+  posCtx('imgCtx',e); closeCtx('tblCtx');
 }
-function applyImg(){
+function applyImgProps(){
   if(!selImg)return;
-  selImg.style.width=document.getElementById('iw').value.trim();
-  selImg.style.height=document.getElementById('ih').value.trim();
+  var w=document.getElementById('iw').value.trim();
+  var h=document.getElementById('ih').value.trim();
+  selImg.style.width=w; selImg.style.height=h; selImg.style.maxWidth='100%';
   selImg.alt=document.getElementById('ialt').value.trim();
   selImg.style.border=document.getElementById('iborder').value.trim();
   selImg.style.borderRadius=document.getElementById('iradius').value.trim();
-  selImg.style.maxWidth='100%';
   var aln=document.getElementById('ialign').value;
   if(aln==='center'){selImg.style.display='block';selImg.style.margin='0 auto';selImg.style.float='';}
   else if(aln==='left'||aln==='right'){selImg.style.float=aln;selImg.style.margin=aln==='left'?'0 12px 6px 0':'0 0 6px 12px';selImg.style.display='';}
   else{selImg.style.float='';selImg.style.margin='';}
   showToast('Image updated','🖼');
 }
-function applyDrive(){
+function applyDriveSrc(){
   if(!selImg)return;
-  var d=driveUrl(document.getElementById('idriveurl').value.trim());
+  var d=drvUrl(document.getElementById('idriveurl').value.trim());
   if(!d){showToast('Invalid Drive link','⚠');return;}
-  selImg.src=d;showToast('Drive image applied','✓');
+  selImg.src=d; showToast('Drive image applied','✓');
+}
+function delSelected(type){
+  if(type==='img'&&selImg){selImg.remove();selImg=null;closeCtx('imgCtx');}
+  if(type==='tbl'&&selTbl){selTbl.remove();selTbl=null;closeCtx('tblCtx');}
+  updateStats();showToast('Deleted','🗑');
 }
 
-// ══════════════════════════════════════════
-//  TABLE CONTEXT — tabbed
-// ══════════════════════════════════════════
-function switchCtxTab(t){
+// ─── TABLE CONTEXT ───
+function openTblCtx(tbl,td,e){
+  selTbl=tbl; selCell=td||null; selRow=td?td.parentElement:null;
+  ED.querySelectorAll('table').forEach(function(t){t.style.outline='';});
+  tbl.style.outline='2px solid #7c6af7';
+  if(td) td.style.backgroundColor=td.style.backgroundColor; // keep
+  document.getElementById('tw').value=tbl.style.width||'';
+  document.getElementById('tbdr').value=''; document.getElementById('tpad').value='';
+  if(td){
+    var bg=td.style.backgroundColor;
+    document.getElementById('cbgh').value=rgbHex(bg)||'';
+    document.getElementById('cbgc').value=rgbHex(bg)||'#ffffff';
+    document.getElementById('cw').value=td.style.width||'';
+    document.getElementById('ch').value=td.style.height||'';
+    document.getElementById('cta').value=td.style.textAlign||'';
+    document.getElementById('cva').value=td.style.verticalAlign||'';
+    document.getElementById('cbdr').value=td.style.border||'';
+    document.getElementById('cfs').value=td.style.fontSize||'';
+  }
+  if(selRow){
+    document.getElementById('rht').value=selRow.style.height||'';
+    var rbg=selRow.style.backgroundColor;
+    document.getElementById('rbgh').value=rgbHex(rbg)||'';
+    document.getElementById('rbgc').value=rgbHex(rbg)||'#ffffff';
+    document.getElementById('rfw').value=selRow.style.fontWeight||'';
+  }
+  posCtx('tblCtx',e); closeCtx('imgCtx');
+}
+function ctxTab(t){
   curCtxTab=t;
-  ['tbl','row','cell'].forEach(function(x){
+  ['t','r','c'].forEach(function(x){
     document.getElementById('ct-'+x).classList.toggle('on',x===t);
     document.getElementById('cp-'+x).style.display=x===t?'block':'none';
   });
 }
-function openTblCtx(tbl,td,e){
-  selTbl=tbl;selCell=td||null;
-  selRow=td?td.parentElement:null;
-  edDoc.querySelectorAll('table').forEach(function(t){t.classList.remove('sel-tbl');});
-  edDoc.querySelectorAll('td,th').forEach(function(c){c.classList.remove('sel-cell');});
-  tbl.classList.add('sel-tbl');
-  if(td)td.classList.add('sel-cell');
-  // Table tab
-  document.getElementById('tw').value=tbl.style.width||tbl.getAttribute('width')||'';
-  document.getElementById('tborder').value='';document.getElementById('tpad').value='';
-  document.getElementById('talign').value=tbl.style.textAlign||tbl.getAttribute('align')||'';
-  document.getElementById('tbgh').value='';document.getElementById('tbgp').value='#ffffff';
-  // Row tab
-  if(selRow){
-    document.getElementById('rh').value=selRow.style.height||'';
-    var rbg=selRow.style.backgroundColor;var rhex=rbg?rgbHex(rbg):'';
-    document.getElementById('rbgh').value=rhex;document.getElementById('rbgp').value=rhex||'#ffffff';
-    document.getElementById('rfw').value=selRow.style.fontWeight||'';
-  }
-  // Cell tab
-  if(td){
-    var bg=td.style.backgroundColor;var hex=bg?rgbHex(bg):'';
-    document.getElementById('cbgh').value=hex;document.getElementById('cbgp').value=hex||'#ffffff';
-    document.getElementById('cw').value=td.style.width||td.getAttribute('width')||'';
-    document.getElementById('ch').value=td.style.height||'';
-    document.getElementById('calign').value=td.style.textAlign||'';
-    document.getElementById('cvalign').value=td.style.verticalAlign||'';
-    document.getElementById('cborder').value=td.style.border||'';
-    document.getElementById('cfs').value=td.style.fontSize||'';
-    var fc=td.style.color;var fhex=fc?rgbHex(fc):'';
-    document.getElementById('cfch').value=fhex;document.getElementById('cfcp').value=fhex||'#000000';
-  }
-  posCtx('tblCtx',e);closeCtx('imgCtx');
-}
 function applyTbl(){
   if(!selTbl)return;
   var w=document.getElementById('tw').value.trim();
-  var bdr=document.getElementById('tborder').value.trim();
+  var bdr=document.getElementById('tbdr').value.trim();
   var pad=document.getElementById('tpad').value.trim();
-  var align=document.getElementById('talign').value;
-  var bg=document.getElementById('tbgh').value.trim()||document.getElementById('tbgp').value;
-  if(w)selTbl.style.width=w;
-  if(align)selTbl.style.textAlign=align;
-  if(bg&&bg!=='#ffffff')selTbl.style.backgroundColor=bg;
-  if(bdr)selTbl.querySelectorAll('td,th').forEach(function(c){c.style.border=bdr;});
-  if(pad)selTbl.querySelectorAll('td,th').forEach(function(c){c.style.padding=pad;});
+  var aln=document.getElementById('talign').value;
+  var bg=document.getElementById('tbgh').value.trim()||document.getElementById('tbgc').value;
+  if(w) selTbl.style.width=w;
+  if(aln) selTbl.style.textAlign=aln;
+  if(bg&&bg!=='#ffffff') selTbl.style.backgroundColor=bg;
+  if(bdr) selTbl.querySelectorAll('td,th').forEach(function(c){c.style.border=bdr;});
+  if(pad) selTbl.querySelectorAll('td,th').forEach(function(c){c.style.padding=pad;});
   showToast('Table updated','⊞');
 }
 function applyRow(){
   if(!selRow)return;
-  var h=document.getElementById('rh').value.trim();
-  var bg=document.getElementById('rbgh').value.trim()||document.getElementById('rbgp').value;
+  var h=document.getElementById('rht').value.trim();
+  var bg=document.getElementById('rbgh').value.trim()||document.getElementById('rbgc').value;
   var fw=document.getElementById('rfw').value;
-  if(h)selRow.style.height=h;
-  if(bg&&bg!=='#ffffff')selRow.style.backgroundColor=bg;
-  if(fw)selRow.style.fontWeight=fw;
+  if(h) selRow.style.height=h;
+  if(bg&&bg!=='#ffffff') selRow.style.backgroundColor=bg;
+  if(fw) selRow.style.fontWeight=fw;
   showToast('Row updated','✓');
 }
 function applyCell(){
   if(!selCell)return;
-  var bg=document.getElementById('cbgh').value.trim()||document.getElementById('cbgp').value;
+  var bg=document.getElementById('cbgh').value.trim()||document.getElementById('cbgc').value;
   var w=document.getElementById('cw').value.trim();
   var h=document.getElementById('ch').value.trim();
-  var al=document.getElementById('calign').value;
-  var va=document.getElementById('cvalign').value;
-  var bdr=document.getElementById('cborder').value.trim();
+  var ta=document.getElementById('cta').value;
+  var va=document.getElementById('cva').value;
+  var bdr=document.getElementById('cbdr').value.trim();
   var fs=document.getElementById('cfs').value.trim();
-  var fc=document.getElementById('cfch').value.trim()||document.getElementById('cfcp').value;
-  if(bg&&bg!=='#ffffff')selCell.style.backgroundColor=bg;
-  if(w)selCell.style.width=w;
-  if(h)selCell.style.height=h;
-  if(al)selCell.style.textAlign=al;
-  if(va)selCell.style.verticalAlign=va;
-  if(bdr)selCell.style.border=bdr;
-  if(fs)selCell.style.fontSize=fs;
-  if(fc&&fc!=='#000000')selCell.style.color=fc;
+  var fc=document.getElementById('cfch').value.trim()||document.getElementById('cfcc').value;
+  if(bg&&bg!=='#ffffff') selCell.style.backgroundColor=bg;
+  if(w) selCell.style.width=w;
+  if(h) selCell.style.height=h;
+  if(ta) selCell.style.textAlign=ta;
+  if(va) selCell.style.verticalAlign=va;
+  if(bdr) selCell.style.border=bdr;
+  if(fs) selCell.style.fontSize=fs;
+  if(fc&&fc!=='#000000') selCell.style.color=fc;
   showToast('Cell updated','✓');
-}
-function syncCP(picker,hex){
-  var v=document.getElementById(hex).value;
-  if(/^#[0-9a-fA-F]{6}$/.test(v))document.getElementById(picker).value=v;
 }
 function tblOp(op){
   if(!selTbl)return;
   var rows=selTbl.rows;
   if(op==='addRow'){
     var nr=selTbl.insertRow(-1);
-    var nc=rows[0]?rows[0].cells.length:1;
-    for(var i=0;i<nc;i++){
+    var ref=rows.length>1?rows[rows.length-2]:rows[0];
+    for(var i=0;i<(ref?ref.cells.length:1);i++){
       var c=nr.insertCell(-1);
-      c.style.cssText=(rows.length>1?rows[rows.length-2]:rows[0]).cells[i]?rows[rows.length>1?rows.length-2:0].cells[i].style.cssText:'border:1px solid #ccc;padding:8px 12px;';
+      c.style.cssText=ref&&ref.cells[i]?ref.cells[i].style.cssText:'border:1px solid #ccc;padding:8px 12px;';
       c.innerHTML='&nbsp;';
-      var r=edDoc.createElement('div');r.className='cr';r.contentEditable='false';c.appendChild(r);
     }
+    setTimeout(function(){bindTableResizers(selTbl);},50);
   } else if(op==='delRow'){
-    if(rows.length>1)selTbl.deleteRow(-1);else showToast('Cannot delete last row','⚠');
+    if(rows.length>1) selTbl.deleteRow(-1); else showToast('Cannot delete last row','⚠');
   } else if(op==='addCol'){
     Array.from(rows).forEach(function(row,ri){
       var isH=ri===0&&row.cells[0]&&row.cells[0].tagName==='TH';
-      var cell=isH?edDoc.createElement('th'):row.insertCell(-1);
+      var cell=isH?document.createElement('th'):row.insertCell(-1);
       if(isH){cell.style.cssText=row.cells[0].style.cssText;cell.textContent='Header';row.appendChild(cell);}
       else{cell.style.cssText=row.cells[0]?row.cells[0].style.cssText:'border:1px solid #ccc;padding:8px 12px;';cell.innerHTML='&nbsp;';}
-      var r=edDoc.createElement('div');r.className='cr';r.contentEditable='false';cell.appendChild(r);
     });
+    setTimeout(function(){bindTableResizers(selTbl);},50);
   } else if(op==='delCol'){
-    if(rows[0]&&rows[0].cells.length>1)Array.from(rows).forEach(function(r){if(r.cells.length>0)r.deleteCell(-1);});
+    if(rows[0]&&rows[0].cells.length>1) Array.from(rows).forEach(function(r){if(r.cells.length>0)r.deleteCell(-1);});
     else showToast('Cannot delete last column','⚠');
   }
 }
-function delSel(type){
-  if(type==='img'&&selImg){var w=selImg.closest('.img-wrap');w?w.remove():selImg.remove();selImg=null;closeCtx('imgCtx');}
-  if(type==='tbl'&&selTbl){selTbl.remove();selTbl=null;closeCtx('tblCtx');}
-  updateStats();showToast('Deleted','🗑');
-}
 
-// ══════════════════════════════════════════
-//  TABLE INSERT
-// ══════════════════════════════════════════
-function openTblModal(){openModal('tblModal');}
+// ─── INSERT TABLE ───
+function openTblModal(){saveSelection();openModal('tblModal');}
 function doInsertTable(){
-  var rows=parseInt(document.getElementById('t-rows').value)||3;
-  var cols=parseInt(document.getElementById('t-cols').value)||3;
+  var rows=parseInt(document.getElementById('t-r').value)||3;
+  var cols=parseInt(document.getElementById('t-c').value)||3;
   var w=document.getElementById('t-w').value||'100%';
-  var hdr=document.getElementById('t-hdr').checked;
-  var bdr=document.getElementById('t-bdr').value||'1px solid #cccccc';
-  var pad=document.getElementById('t-pad').value||'8px 12px';
+  var hdr=document.getElementById('t-h').checked;
+  var bdr=document.getElementById('t-b').value||'1px solid #cccccc';
+  var pad=document.getElementById('t-p').value||'8px 12px';
   var hbg=document.getElementById('t-hbg').value||'#f0f0f5';
-  var tbl=edDoc.createElement('table');
+  var tbl=document.createElement('table');
   tbl.style.cssText='border-collapse:collapse;width:'+w+';margin:10px 0;';
   for(var r=0;r<rows;r++){
-    var tr=edDoc.createElement('tr');
+    var tr=document.createElement('tr');
     for(var c=0;c<cols;c++){
       var isH=r===0&&hdr;
-      var cell=edDoc.createElement(isH?'th':'td');
+      var cell=document.createElement(isH?'th':'td');
       cell.style.cssText=isH?'border:'+bdr+';padding:'+pad+';background:'+hbg+';font-weight:600;text-align:left;':'border:'+bdr+';padding:'+pad+';';
       cell.textContent=isH?'Header '+(c+1):'Cell';
-      var rz=edDoc.createElement('div');rz.className='cr';rz.contentEditable='false';cell.appendChild(rz);
       tr.appendChild(cell);
     }
     tbl.appendChild(tr);
   }
-  insertNode(tbl);closeModal('tblModal');addCR(tbl);
+  closeModal('tblModal');
+  restoreSelection();
+  insertNodeAtCursor(tbl);
+  setTimeout(function(){bindTableResizers(tbl);},50);
 }
 
-// ══════════════════════════════════════════
-//  IMAGE INSERT
-// ══════════════════════════════════════════
-function openImgModal(){openModal('imgModal');}
-function switchMTab(t){
-  curMTab=t;
-  ['url','drive'].forEach(function(x){
+// ─── INSERT IMAGE ───
+function openImgModal(){saveSelection();openModal('imgModal');}
+function imgTab(t){
+  curImgTab=t;
+  ['url','drv'].forEach(function(x){
     document.getElementById('mt-'+x).classList.toggle('on',x===t);
     document.getElementById('mp-'+x).style.display=x===t?'block':'none';
   });
 }
-function prvUrl(){var v=document.getElementById('m-url').value;var p=document.getElementById('m-url-p');p.src=v;p.style.display=v?'block':'none';}
-function driveUrl(raw){
+function prvUrl(){var v=document.getElementById('m-url').value;var p=document.getElementById('m-urlp');p.src=v;p.style.display=v?'block':'none';}
+function drvUrl(raw){
   var m=raw.match(/\/file\/d\/([a-zA-Z0-9_-]{10,})/);if(m)return 'https://lh3.googleusercontent.com/d/'+m[1];
   m=raw.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);if(m)return 'https://lh3.googleusercontent.com/d/'+m[1];
   return null;
 }
-function prvDrive(){
-  var raw=document.getElementById('m-drive').value.trim();var d=driveUrl(raw);
-  var p=document.getElementById('m-drive-p');var u=document.getElementById('m-drive-u');
+function prvDrv(){
+  var raw=document.getElementById('m-drv').value.trim();var d=drvUrl(raw);
+  var p=document.getElementById('m-drvp');var u=document.getElementById('m-drvu');
   if(d){p.src=d;p.style.display='block';u.textContent='→ '+d;u.style.display='block';}
   else{p.style.display='none';u.style.display='none';}
 }
-}
 function insertImg(){
   var src='';
-  if(curMTab==='url')src=document.getElementById('m-url').value.trim();
-  else if(curMTab==='drive'){src=driveUrl(document.getElementById('m-drive').value.trim())||'';if(!src){showToast('Invalid Drive link','⚠');return;}}
+  if(curImgTab==='url') src=document.getElementById('m-url').value.trim();
+  else{src=drvUrl(document.getElementById('m-drv').value.trim())||'';if(!src){showToast('Invalid Drive link','⚠');return;}}
   if(!src){showToast('No image source','⚠');return;}
-  var img=edDoc.createElement('img');
-  img.src=src;img.alt=document.getElementById('m-alt').value.trim();
+  var img=document.createElement('img');
+  img.src=src; img.alt=document.getElementById('m-alt').value.trim();
   var iw=document.getElementById('m-iw').value.trim();var ih=document.getElementById('m-ih').value.trim();
   img.style.maxWidth='100%';if(iw)img.style.width=iw;if(ih)img.style.height=ih;
-  insertNode(img);closeModal('imgModal');showToast('Image inserted','🖼');
+  closeModal('imgModal');
+  restoreSelection();
+  insertNodeAtCursor(img);
+  showToast('Image inserted','🖼');
 }
 
-// ══════════════════════════════════════════
-//  PANEL / MODAL HELPERS
-// ══════════════════════════════════════════
+// ─── INSERT LINK ───
+function openLinkModal(){
+  var sel=window.getSelection();
+  var txt=sel&&!sel.isCollapsed?sel.toString():'';
+  document.getElementById('lnk-txt').value=txt;
+  document.getElementById('lnk-url').value='https://';
+  saveSelection();
+  openModal('linkModal');
+  setTimeout(function(){document.getElementById(txt?'lnk-url':'lnk-txt').focus();},60);
+}
+function insertLink(){
+  var url=document.getElementById('lnk-url').value.trim();
+  var txt=document.getElementById('lnk-txt').value.trim()||url;
+  var clr=document.getElementById('lnk-clr').value||'#5b4de0';
+  if(!url){showToast('Enter a URL','⚠');return;}
+  var a=document.createElement('a');a.href=url;a.target='_blank';a.style.color=clr;a.textContent=txt;
+  closeModal('linkModal');
+  restoreSelection();
+  insertNodeAtCursor(a);
+  showToast('Link inserted','🔗');
+}
+
+// ─── CTX / MODAL HELPERS ───
 function posCtx(id,e){
   var p=document.getElementById(id);p.classList.add('show');
-  var vw=window.innerWidth,vh=window.innerHeight;
-  var pw=p.offsetWidth||260,ph=p.offsetHeight||300;
+  var vw=window.innerWidth,vh=window.innerHeight,pw=p.offsetWidth||260,ph=p.offsetHeight||300;
   var x=e.clientX+14,y=e.clientY+14;
   if(x+pw>vw-6)x=vw-pw-6;if(y+ph>vh-6)y=vh-ph-6;
   p.style.left=x+'px';p.style.top=y+'px';
 }
 function closeCtx(id){
   document.getElementById(id).classList.remove('show');
-  if(id==='imgCtx'&&selImg&&edDoc){edDoc.querySelectorAll('img').forEach(function(i){i.classList.remove('sel');});edDoc.querySelectorAll('.img-wrap').forEach(function(w){w.classList.remove('sel');});selImg=null;}
-  if(id==='tblCtx'&&selTbl&&edDoc){edDoc.querySelectorAll('table').forEach(function(t){t.classList.remove('sel-tbl');});edDoc.querySelectorAll('td,th').forEach(function(c){c.classList.remove('sel-cell');});selTbl=null;selCell=null;selRow=null;}
+  if(id==='imgCtx'&&selImg){selImg.classList.remove('sel');selImg=null;}
+  if(id==='tblCtx'&&selTbl){selTbl.style.outline='';selTbl=null;selCell=null;selRow=null;}
 }
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.overlay').forEach(function(o){o.addEventListener('click',function(e){if(e.target===o)o.classList.remove('open');});});
 
-// ══════════════════════════════════════════
-//  TOAST
-// ══════════════════════════════════════════
-function showToast(msg,ico){
-  var t=document.getElementById('toast');
-  document.getElementById('t-msg').textContent=msg;document.getElementById('t-ico').textContent=ico||'✓';
-  t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},2600);
+// ─── SYNC COLOR PICKERS ───
+function syncClr(pickerId,hexId){
+  var v=document.getElementById(hexId).value;
+  if(/^#[0-9a-fA-F]{6}$/.test(v)) document.getElementById(pickerId).value=v;
 }
+// Also sync pickers → hex on change
+['tbgc','rbgc','cbgc','cfcc'].forEach(function(id){
+  var el=document.getElementById(id);
+  if(el) el.addEventListener('input',function(){
+    var hexId=id.replace('c','h');
+    if(document.getElementById(hexId)) document.getElementById(hexId).value=this.value;
+  });
+});
 
-// ══════════════════════════════════════════
-//  UTILS
-// ══════════════════════════════════════════
+// ─── UTILS ───
 function rgbHex(rgb){
   if(!rgb)return '';if(rgb.startsWith('#'))return rgb;
   var m=rgb.match(/(\d+)[,\s]+(\d+)[,\s]+(\d+)/);if(!m)return '';
   return '#'+[m[1],m[2],m[3]].map(function(x){return parseInt(x).toString(16).padStart(2,'0');}).join('');
 }
 
-// ══════════════════════════════════════════
-//  KEYBOARD SHORTCUTS
-// ══════════════════════════════════════════
+// ─── KEYBOARD ───
 document.addEventListener('keydown',function(e){
   if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key==='Enter'){e.preventDefault();doConvert();}
   if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key==='C'){e.preventDefault();copyHTML();}
   if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key==='M'){e.preventDefault();doMinify();}
-  if(e.key==='Escape'){closeCtx('imgCtx');closeCtx('tblCtx');
-    document.querySelectorAll('.overlay.open').forEach(function(o){o.classList.remove('open');});}
-});
-// Also wire Ctrl+Z/Y inside the iframe editor
-window.addEventListener('load',function(){
-  var frame=document.getElementById('edFrame');
-  if(frame.contentWindow){
-    frame.contentWindow.document.addEventListener('keydown',function(e){
-      if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&e.key==='z'){e.preventDefault();doUndo();}
-      if((e.ctrlKey||e.metaKey)&&(e.key==='y'||(e.shiftKey&&e.key==='z'))){e.preventDefault();doRedo();}
-    });
+  if(e.key==='Escape'){
+    closeCtx('imgCtx');closeCtx('tblCtx');
+    document.querySelectorAll('.overlay.open').forEach(function(o){o.classList.remove('open');});
   }
 });
+// Font size Enter key
+document.getElementById('fsz').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();applySize();}});
 
+// GAS
 if(typeof google!=='undefined'&&google.script){
   window.getEditorHTML=function(){return document.getElementById('htmlOut').value;};
 }
