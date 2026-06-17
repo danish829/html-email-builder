@@ -278,6 +278,7 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
     <div class="ctx-tab on" id="ct-tbl" onclick="switchCtxTab('tbl')">Table</div>
     <div class="ctx-tab" id="ct-row" onclick="switchCtxTab('row')">Row</div>
     <div class="ctx-tab" id="ct-cell" onclick="switchCtxTab('cell')">Cell</div>
+    <div class="ctx-tab" id="ct-col" onclick="switchCtxTab('col')">Col</div>
   </div>
   <div id="cp-tbl">
     <div class="crow"><label>Width</label><input class="ci" id="tw" placeholder="100% or 600px"></div>
@@ -331,6 +332,25 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
     </div>
     <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;">
       <button class="btn btn-primary" onclick="applyCell()">Apply Cell</button>
+      <button class="btn btn-ghost" onclick="tblOp('addCol')">+ Col</button>
+      <button class="btn btn-ghost" onclick="tblOp('delCol')">− Col</button>
+    </div>
+  </div>
+  <!-- COL TAB — set width on every cell in the selected column -->
+  <div id="cp-col" style="display:none;">
+    <div style="font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.5;">Click any cell to select its column, then set width below.</div>
+    <div class="crow"><label>Col width</label><input class="ci" id="col-w" placeholder="120px or 20%"></div>
+    <div class="crow"><label>Min width</label><input class="ci" id="col-minw" placeholder="60px"></div>
+    <div class="crow"><label>BG color</label>
+      <input type="color" id="col-bgp" value="#ffffff" oninput="document.getElementById('col-bgh').value=this.value" style="width:28px;height:22px;border:1px solid var(--border);border-radius:3px;cursor:pointer;padding:1px;">
+      <input class="ci" id="col-bgh" placeholder="#ffffff" style="flex:1;" oninput="syncCP('col-bgp','col-bgh')">
+    </div>
+    <div class="crow"><label>Text align</label>
+      <select class="ci" id="col-align"><option value="">Default</option><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select>
+    </div>
+    <div class="crow"><label>Border</label><input class="ci" id="col-border" placeholder="1px solid #ccc"></div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;">
+      <button class="btn btn-primary" onclick="applyCol()">Apply Column</button>
       <button class="btn btn-ghost" onclick="tblOp('addCol')">+ Col</button>
       <button class="btn btn-ghost" onclick="tblOp('delCol')">− Col</button>
     </div>
@@ -605,36 +625,49 @@ function ec(cmd,val){
   edDoc.body.focus();updateStats();
 }
 
-// CHANGE 2: Font family — wrap in span with style for reliable cross-browser support
+// ── FONT FAMILY & SIZE ──
+// Uses execCommand which is the most reliable method inside designMode iframes.
+// execCommand('fontName') inserts <font face=""> tags — these survive mixed
+// selections (bold/italic spans etc.) without corrupting the DOM.
+// We then let processHTML strip <font> tags if user has that option checked,
+// or convert them to spans via the style. For email use the font face attr
+// is actually fine and widely supported.
 function applyFontFamily(family){
   if(!family||!edDoc)return;
-  var sel=edDoc.getSelection();
-  if(!sel||!sel.rangeCount||sel.isCollapsed){
-    // No selection — just use execCommand for future typing
+  edDoc.body.focus();
+  // Small delay so iframe regains focus after dropdown interaction
+  setTimeout(function(){
+    edDoc.body.focus();
     edDoc.execCommand('fontName',false,family);
-    edDoc.body.focus();return;
-  }
-  var range=sel.getRangeAt(0);
-  var span=edDoc.createElement('span');
-  span.style.fontFamily=family;
-  try{range.surroundContents(span);}
-  catch(e){var frag=range.extractContents();span.appendChild(frag);range.insertNode(span);}
-  updateStats();
+    updateStats();
+  },10);
 }
 
-// CHANGE 2: Font size — wrap in span with px size
 function applyFontSize(px){
   if(!px||!edDoc)return;
-  var sel=edDoc.getSelection();
-  if(!sel||!sel.rangeCount||sel.isCollapsed){
-    edDoc.body.focus();return;
-  }
-  var range=sel.getRangeAt(0);
-  var span=edDoc.createElement('span');
-  span.style.fontSize=px;
-  try{range.surroundContents(span);}
-  catch(e){var frag=range.extractContents();span.appendChild(frag);range.insertNode(span);}
-  updateStats();
+  edDoc.body.focus();
+  setTimeout(function(){
+    edDoc.body.focus();
+    var sel=edDoc.getSelection();
+    if(!sel||!sel.rangeCount||sel.isCollapsed){return;}
+    var range=sel.getRangeAt(0);
+    // Use a unique sentinel string to mark our font elements
+    var sentinel='__FS__'+Date.now();
+    // fontSize 7 tags all selected content; we mark them with a data attr
+    // to avoid touching pre-existing font[size=7] elements
+    edDoc.execCommand('fontSize',false,'7');
+    // Mark every new font[size="7"] that lacks our sentinel
+    edDoc.body.querySelectorAll('font[size="7"]').forEach(function(el){
+      if(!el.dataset.fsSentinel) el.dataset.fsSentinel=sentinel;
+    });
+    // Now only fix the ones we just created
+    edDoc.body.querySelectorAll('font[size="7"][data-fs-sentinel="'+sentinel+'"]').forEach(function(el){
+      el.removeAttribute('size');
+      el.removeAttribute('data-fs-sentinel');
+      el.style.fontSize=px;
+    });
+    updateStats();
+  },10);
 }
 
 function insertNode(node){
@@ -874,7 +907,7 @@ function applyDrive(){
 // ══════════════════════════════════════════
 function switchCtxTab(t){
   curCtxTab=t;
-  ['tbl','row','cell'].forEach(function(x){
+  ['tbl','row','cell','col'].forEach(function(x){
     document.getElementById('ct-'+x).classList.toggle('on',x===t);
     document.getElementById('cp-'+x).style.display=x===t?'block':'none';
   });
@@ -906,7 +939,43 @@ function openTblCtx(tbl,td,e){
     var fc=td.style.color;var fhex=fc?rgbHex(fc):'';
     document.getElementById('cfch').value=fhex;document.getElementById('cfcp').value=fhex||'#000000';
   }
+  // Col tab — figure out which column index was clicked
+  if(td&&selTbl){
+    var colIdx=Array.from(td.parentElement.cells).indexOf(td);
+    // Store for applyCol
+    selTbl.dataset.selColIdx=colIdx;
+    // Pre-fill col fields from first cell in that column
+    var firstCell=selTbl.rows[0]&&selTbl.rows[0].cells[colIdx];
+    if(firstCell){
+      var cbg=firstCell.style.backgroundColor;
+      document.getElementById('col-bgh').value=cbg?rgbHex(cbg):'';
+      document.getElementById('col-bgp').value=cbg?rgbHex(cbg):'#ffffff';
+      document.getElementById('col-w').value=firstCell.style.width||firstCell.getAttribute('width')||'';
+      document.getElementById('col-minw').value=firstCell.style.minWidth||'';
+      document.getElementById('col-align').value=firstCell.style.textAlign||'';
+      document.getElementById('col-border').value=firstCell.style.border||'';
+    }
+  }
   posCtx('tblCtx',e);closeCtx('imgCtx');
+}
+function applyCol(){
+  if(!selTbl)return;
+  var colIdx=parseInt(selTbl.dataset.selColIdx||'0');
+  var w=document.getElementById('col-w').value.trim();
+  var minw=document.getElementById('col-minw').value.trim();
+  var bg=document.getElementById('col-bgh').value.trim()||document.getElementById('col-bgp').value;
+  var al=document.getElementById('col-align').value;
+  var bdr=document.getElementById('col-border').value.trim();
+  Array.from(selTbl.rows).forEach(function(row){
+    var cell=row.cells[colIdx];
+    if(!cell)return;
+    if(w)cell.style.width=w;
+    if(minw)cell.style.minWidth=minw;
+    if(bg&&bg!=='#ffffff')cell.style.backgroundColor=bg;
+    if(al)cell.style.textAlign=al;
+    if(bdr)cell.style.border=bdr;
+  });
+  showToast('Column updated','⊞');
 }
 function applyTbl(){
   if(!selTbl)return;
