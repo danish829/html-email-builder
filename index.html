@@ -35,19 +35,10 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
 
 .workspace{display:flex;flex:1;min-height:0;position:relative;}
 
-/* SPLITTER — fixed smooth drag */
-.splitter{
-  width:6px;background:var(--border);cursor:col-resize;flex-shrink:0;
-  position:relative;z-index:10;transition:background .1s;
-  user-select:none;
-}
-.splitter::after{
-  content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:2px;height:40px;background:var(--border2);border-radius:2px;
-}
+.splitter{width:6px;background:var(--border);cursor:col-resize;flex-shrink:0;position:relative;z-index:10;transition:background .1s;user-select:none;}
+.splitter::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:2px;height:40px;background:var(--border2);border-radius:2px;}
 .splitter:hover,.splitter.dragging{background:var(--accent);}
 .splitter.dragging::after{background:var(--accent-h);}
-/* Drag cover — prevents iframe stealing mouse events */
 #dragCover{display:none;position:fixed;inset:0;z-index:9999;cursor:col-resize;}
 
 .epane{display:flex;flex-direction:column;width:52%;min-width:180px;flex-shrink:0;}
@@ -84,7 +75,6 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
 .btn-green{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25);}
 .btn-green:hover{background:rgba(34,197,94,.2);}
 
-/* TABLE CONTEXT PANEL — wider for full controls */
 .ctx{position:fixed;background:var(--s2);border:1px solid var(--border2);border-radius:9px;padding:12px;box-shadow:0 12px 36px rgba(0,0,0,.6);z-index:400;min-width:260px;display:none;}
 .ctx.show{display:block;}
 .ctx-hdr{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:9px;display:flex;align-items:center;justify-content:space-between;}
@@ -100,7 +90,6 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
 .ctx-tab{flex:1;padding:4px;text-align:center;font-size:10px;font-weight:600;color:var(--muted);cursor:pointer;border-radius:4px;transition:all .1s;text-transform:uppercase;}
 .ctx-tab.on{background:var(--accent);color:#fff;}
 
-/* LINK MODAL */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;z-index:500;}
 .overlay.open{display:flex;}
 .modal{background:var(--s2);border:1px solid var(--border2);border-radius:11px;padding:18px;width:460px;max-width:95vw;max-height:86vh;overflow-y:auto;}
@@ -110,14 +99,15 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
 .mtab.on{background:var(--accent);color:#fff;}
 .mi{width:100%;background:var(--s3);border:1px solid var(--border);color:var(--text);padding:7px 9px;border-radius:6px;font-size:12px;font-family:'Inter',sans-serif;outline:none;margin-bottom:7px;}
 .mi:focus{border-color:var(--accent);}
-.dropz{border:2px dashed var(--border);border-radius:7px;padding:22px;text-align:center;color:var(--muted);font-size:12px;cursor:pointer;margin-bottom:7px;}
-.dropz:hover,.dropz.over{border-color:var(--accent);color:var(--accent-h);}
 .iprev{max-width:100%;border-radius:5px;margin-bottom:7px;display:none;border:1px solid var(--border);}
 .mfooter{display:flex;justify-content:flex-end;gap:6px;margin-top:8px;}
 .dnote{font-size:11px;color:var(--muted);background:var(--s3);border-radius:5px;padding:6px 8px;margin-bottom:7px;line-height:1.5;}
 .dnote strong{color:var(--amber);}
-#fi{display:none;}
 .mi-label{font-size:11px;color:var(--sub);margin-bottom:4px;display:block;}
+.drive-steps{font-size:11px;color:var(--sub);background:var(--s3);border-radius:5px;padding:8px 10px;margin-bottom:8px;line-height:1.8;}
+.drive-steps ol{padding-left:16px;}
+.drive-steps li{margin-bottom:2px;}
+.drive-steps code{background:var(--s2);padding:1px 4px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent-h);}
 
 .toast{position:fixed;bottom:18px;right:18px;background:var(--s3);border:1px solid var(--border2);color:var(--text);padding:8px 13px;border-radius:7px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px;box-shadow:0 6px 24px rgba(0,0,0,.5);transform:translateY(10px);opacity:0;transition:all .18s;pointer-events:none;z-index:9999;}
 .toast.show{transform:translateY(0);opacity:1;}
@@ -125,14 +115,12 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
 </head>
 <body>
 
-<!-- drag cover prevents iframe stealing mouse during splitter drag -->
 <div id="dragCover"></div>
 
 <div class="topbar">
   <div class="brand"><div class="brand-dot">✦</div>HTML Builder</div>
   <div class="tools">
     <div class="tg">
-      <!-- Undo / Redo -->
       <button class="tb" onclick="doUndo()" title="Undo (Ctrl+Z)">↩ Undo</button>
       <button class="tb" onclick="doRedo()" title="Redo (Ctrl+Y)">↪ Redo</button>
     </div>
@@ -148,18 +136,29 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
         <option value="h1">H1</option><option value="h2">H2</option>
         <option value="h3">H3</option><option value="p">Para</option><option value="pre">Code</option>
       </select>
-      <select class="tsel" onchange="ec('fontName',this.value);this.value=''" style="width:84px;">
+      <!-- CHANGE 2: Added Calibri, fixed font family application -->
+      <select class="tsel" id="fontFamilySel" onchange="applyFontFamily(this.value);this.value=''" style="width:90px;">
         <option value="">Font</option>
-        <option>Arial</option><option>Georgia</option>
-        <option value="Times New Roman">Times</option>
-        <option>Verdana</option><option value="Courier New">Courier</option>
+        <option value="Arial">Arial</option>
+        <option value="Calibri">Calibri</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Times New Roman">Times NR</option>
+        <option value="Verdana">Verdana</option>
+        <option value="Trebuchet MS">Trebuchet</option>
+        <option value="Tahoma">Tahoma</option>
+        <option value="Courier New">Courier</option>
       </select>
-      <select class="tsel" onchange="ecSize(this.value);this.value=''">
+      <!-- CHANGE 2: All sizes 8-72 -->
+      <select class="tsel" onchange="applyFontSize(this.value);this.value=''" style="width:50px;">
         <option value="">Size</option>
-        <option value="10px">10</option><option value="12px">12</option>
-        <option value="14px">14</option><option value="16px">16</option>
-        <option value="18px">18</option><option value="22px">22</option>
-        <option value="28px">28</option><option value="36px">36</option>
+        <option value="8px">8</option><option value="9px">9</option><option value="10px">10</option>
+        <option value="11px">11</option><option value="12px">12</option><option value="13px">13</option>
+        <option value="14px">14</option><option value="15px">15</option><option value="16px">16</option>
+        <option value="17px">17</option><option value="18px">18</option><option value="19px">19</option>
+        <option value="20px">20</option><option value="22px">22</option><option value="24px">24</option>
+        <option value="26px">26</option><option value="28px">28</option><option value="30px">30</option>
+        <option value="32px">32</option><option value="36px">36</option><option value="40px">40</option>
+        <option value="48px">48</option><option value="60px">60</option><option value="72px">72</option>
       </select>
     </div>
     <div class="tg">
@@ -272,7 +271,7 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
   </div>
 </div>
 
-<!-- TABLE CONTEXT — tabbed: Table / Row / Cell -->
+<!-- TABLE CONTEXT -->
 <div class="ctx" id="tblCtx" style="min-width:280px;">
   <div class="ctx-hdr">⊞ Table Editor <button class="xbtn" onclick="closeCtx('tblCtx')">✕</button></div>
   <div class="ctx-tabs">
@@ -280,8 +279,6 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
     <div class="ctx-tab" id="ct-row" onclick="switchCtxTab('row')">Row</div>
     <div class="ctx-tab" id="ct-cell" onclick="switchCtxTab('cell')">Cell</div>
   </div>
-
-  <!-- TABLE TAB -->
   <div id="cp-tbl">
     <div class="crow"><label>Width</label><input class="ci" id="tw" placeholder="100% or 600px"></div>
     <div class="crow"><label>Border</label><input class="ci" id="tborder" placeholder="1px solid #ccc"></div>
@@ -298,8 +295,6 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
       <button class="del-btn" onclick="delSel('tbl')">🗑 Delete</button>
     </div>
   </div>
-
-  <!-- ROW TAB -->
   <div id="cp-row" style="display:none;">
     <div class="crow"><label>Row height</label><input class="ci" id="rh" placeholder="40px or auto"></div>
     <div class="crow"><label>BG color</label>
@@ -315,8 +310,6 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
       <button class="btn btn-ghost" onclick="tblOp('delRow')">− Row</button>
     </div>
   </div>
-
-  <!-- CELL TAB -->
   <div id="cp-cell" style="display:none;">
     <div class="crow"><label>BG color</label>
       <input type="color" id="cbgp" value="#ffffff" oninput="document.getElementById('cbgh').value=this.value" style="width:28px;height:22px;border:1px solid var(--border);border-radius:3px;cursor:pointer;padding:1px;">
@@ -344,7 +337,7 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
   </div>
 </div>
 
-<!-- LINK MODAL — single popup with URL + text -->
+<!-- LINK MODAL -->
 <div class="overlay" id="linkModal">
   <div class="modal" style="width:380px;">
     <div class="modal-title">🔗 Insert / Edit Link</div>
@@ -364,33 +357,36 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
   </div>
 </div>
 
-<!-- IMAGE MODAL -->
+<!-- CHANGE 3: IMAGE MODAL — URL and Drive only with Drive instructions -->
 <div class="overlay" id="imgModal">
   <div class="modal">
     <div class="modal-title">🖼 Insert Image</div>
     <div class="mtabs">
-      <div class="mtab on" id="mt-url" onclick="switchMTab('url')">URL</div>
-      <div class="mtab" id="mt-drive" onclick="switchMTab('drive')">Drive</div>
-      <div class="mtab" id="mt-upload" onclick="switchMTab('upload')">Upload</div>
-      <div class="mtab" id="mt-b64" onclick="switchMTab('b64')">Base64</div>
+      <div class="mtab on" id="mt-url" onclick="switchMTab('url')">Image URL</div>
+      <div class="mtab" id="mt-drive" onclick="switchMTab('drive')">Google Drive</div>
     </div>
+    <!-- URL TAB -->
     <div id="mp-url">
-      <input class="mi" id="m-url" placeholder="https://…" oninput="prvUrl()">
+      <div class="dnote">Paste any publicly accessible image URL (your website, CDN, Imgur, etc.)</div>
+      <input class="mi" id="m-url" placeholder="https://example.com/image.jpg" oninput="prvUrl()">
       <img class="iprev" id="m-url-p">
     </div>
+    <!-- DRIVE TAB -->
     <div id="mp-drive" style="display:none;">
-      <div class="dnote"><strong>⚠ Share setting:</strong> "Anyone with the link can view"<br>Paste Drive link → auto-converted to direct URL.</div>
-      <input class="mi" id="m-drive" placeholder="https://drive.google.com/file/d/…" oninput="prvDrive()">
+      <div class="dnote"><strong>⚠ File must be publicly shared before use in emails.</strong></div>
+      <div class="drive-steps">
+        <strong style="color:var(--text);display:block;margin-bottom:6px;">How to upload and share on Google Drive:</strong>
+        <ol>
+          <li>Go to <code>drive.google.com</code> and upload your image</li>
+          <li>Right-click the file → <code>Share</code></li>
+          <li>Click <code>Change to anyone with the link</code></li>
+          <li>Set role to <code>Viewer</code> → click <code>Done</code></li>
+          <li>Click <code>Copy link</code> and paste it below</li>
+        </ol>
+      </div>
+      <input class="mi" id="m-drive" placeholder="https://drive.google.com/file/d/FILE_ID/view?usp=sharing" oninput="prvDrive()">
       <img class="iprev" id="m-drive-p">
       <div id="m-drive-u" style="font-size:10px;color:var(--green);margin-bottom:6px;display:none;word-break:break-all;"></div>
-    </div>
-    <div id="mp-upload" style="display:none;">
-      <div class="dropz" id="dz" onclick="document.getElementById('fi').click()" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="onDrop(event)">📁 Click or drag image (embeds as base64)</div>
-      <img class="iprev" id="m-up-p">
-      <input type="file" id="fi" accept="image/*" onchange="onFile(event)">
-    </div>
-    <div id="mp-b64" style="display:none;">
-      <textarea class="mi" id="m-b64" rows="3" placeholder="Paste base64…" style="resize:vertical;"></textarea>
     </div>
     <input class="mi" id="m-alt" placeholder="Alt text (optional)">
     <div style="display:flex;gap:6px;">
@@ -426,7 +422,7 @@ select.tsel{background:var(--s2);border:1px solid var(--border);color:var(--text
 
 <script>
 var edDoc=null,selImg=null,selTbl=null,selCell=null,selRow=null;
-var upB64='',curMTab='url',activeTab='code',curCtxTab='tbl';
+var curMTab='url',activeTab='code',curCtxTab='tbl';
 
 // ══════════════════════════════════════════
 //  EDITOR IFRAME INIT
@@ -452,8 +448,8 @@ td,th{border:1px solid #ccc;padding:7px 10px;min-width:30px;position:relative;}\
 th{background:#f0f0f5;font-weight:600;}\
 table.sel-tbl td,table.sel-tbl th{outline:1px solid #7c6af7;outline-offset:-1px;}\
 td.sel-cell,th.sel-cell{background:rgba(124,106,247,.08)!important;}\
-.cr{position:absolute;top:0;right:-3px;width:6px;height:100%;cursor:col-resize;z-index:4;}\
-.cr:hover,.cr.active{background:rgba(124,106,247,.4);}\
+.cr{position:absolute;top:0;right:-3px;width:8px;height:100%;cursor:col-resize;z-index:4;background:transparent;}\
+.cr:hover,.cr.active{background:rgba(124,106,247,.5);}\
 a{color:#5b4de0;}\
 </style></head><body></body></html>');
   edDoc.close();
@@ -477,7 +473,7 @@ a{color:#5b4de0;}\
 window.addEventListener('load',initEditor);
 
 // ══════════════════════════════════════════
-//  IMAGE DRAG RESIZE — smooth
+//  IMAGE DRAG RESIZE
 // ══════════════════════════════════════════
 function setupImageResize(){
   new MutationObserver(function(){
@@ -488,10 +484,8 @@ function wrapImg(img){
   if(img.classList.contains('wrapped')||img.closest('.img-wrap'))return;
   img.classList.add('wrapped');
   var wrap=edDoc.createElement('span');
-  wrap.className='img-wrap';
-  wrap.contentEditable='false';
-  img.parentNode.insertBefore(wrap,img);
-  wrap.appendChild(img);
+  wrap.className='img-wrap';wrap.contentEditable='false';
+  img.parentNode.insertBefore(wrap,img);wrap.appendChild(img);
   var rh=edDoc.createElement('span');rh.className='rh';wrap.appendChild(rh);
   var sz=edDoc.createElement('span');sz.className='sz';wrap.appendChild(sz);
   var startX,startY,startW,startH,aspect;
@@ -501,28 +495,31 @@ function wrapImg(img){
     startW=img.offsetWidth||img.naturalWidth||200;
     startH=img.offsetHeight||img.naturalHeight||150;
     aspect=startH/startW;
-    wrap.classList.add('resizing','sel');
-    sz.textContent=startW+'×'+startH;
+    wrap.classList.add('resizing','sel');sz.textContent=startW+'×'+startH;
+    var cover=document.getElementById('dragCover');
+    cover.style.display='block';cover.style.cursor='nwse-resize';
     var onMove=function(ev){
-      var dw=ev.clientX-startX;
-      var newW=Math.max(20,startW+dw);
+      var dw=ev.clientX-startX,newW=Math.max(20,startW+dw);
       img.style.width=newW+'px';
       if(ev.shiftKey){img.style.height=Math.round(newW*aspect)+'px';sz.textContent=newW+'×'+Math.round(newW*aspect);}
       else{var dh=ev.clientY-startY;img.style.height=Math.max(10,startH+dh)+'px';sz.textContent=newW+'×'+Math.max(10,startH+dh);}
     };
     var onUp=function(){
       wrap.classList.remove('resizing');
+      cover.style.display='none';
       if(selImg===img){document.getElementById('iw').value=img.style.width;document.getElementById('ih').value=img.style.height;}
-      edDoc.removeEventListener('mousemove',onMove);
-      edDoc.removeEventListener('mouseup',onUp);
+      document.removeEventListener('mousemove',onMove);
+      document.removeEventListener('mouseup',onUp);
     };
-    edDoc.addEventListener('mousemove',onMove);
-    edDoc.addEventListener('mouseup',onUp);
+    document.addEventListener('mousemove',onMove);
+    document.addEventListener('mouseup',onUp);
   });
 }
 
 // ══════════════════════════════════════════
-//  COLUMN DRAG RESIZE — smooth
+//  CHANGE 1: COLUMN DRAG RESIZE
+//  Fixed: use parent document for mousemove/mouseup
+//  so drag works even when mouse leaves the iframe
 // ══════════════════════════════════════════
 function setupColResize(){
   new MutationObserver(function(){
@@ -534,15 +531,33 @@ function addCR(tbl){
   var rebind=function(){
     tbl.querySelectorAll('td,th').forEach(function(cell){
       if(!cell.querySelector('.cr')){
-        var r=edDoc.createElement('div');r.className='cr';r.contentEditable='false';
+        var r=edDoc.createElement('div');
+        r.className='cr';r.contentEditable='false';
+        cell.style.position='relative';
         cell.appendChild(r);
         r.addEventListener('mousedown',function(e){
           e.preventDefault();e.stopPropagation();
-          var startX=e.clientX,startW=cell.offsetWidth;
+          var frame=document.getElementById('edFrame');
+          var frameRect=frame.getBoundingClientRect();
+          // Convert iframe-relative clientX to page-level X
+          var startPageX=e.clientX+frameRect.left;
+          var startW=cell.offsetWidth;
           r.classList.add('active');
-          var onMove=function(ev){cell.style.width=Math.max(20,startW+(ev.clientX-startX))+'px';};
-          var onUp=function(){r.classList.remove('active');edDoc.removeEventListener('mousemove',onMove);edDoc.removeEventListener('mouseup',onUp);};
-          edDoc.addEventListener('mousemove',onMove);edDoc.addEventListener('mouseup',onUp);
+          var cover=document.getElementById('dragCover');
+          cover.style.display='block';
+          cover.style.cursor='col-resize';
+          var onMove=function(ev){
+            var delta=ev.clientX-startPageX;
+            cell.style.width=Math.max(20,startW+delta)+'px';
+          };
+          var onUp=function(){
+            r.classList.remove('active');
+            cover.style.display='none';
+            document.removeEventListener('mousemove',onMove);
+            document.removeEventListener('mouseup',onUp);
+          };
+          document.addEventListener('mousemove',onMove);
+          document.addEventListener('mouseup',onUp);
         });
       }
     });
@@ -552,8 +567,7 @@ function addCR(tbl){
 }
 
 // ══════════════════════════════════════════
-//  SMOOTH SPLITTER DRAG
-//  Key: show dragCover over iframe during drag
+//  SPLITTER DRAG
 // ══════════════════════════════════════════
 (function(){
   var spl=document.getElementById('splitter');
@@ -563,16 +577,13 @@ function addCR(tbl){
   var dragging=false,startX,startW;
   spl.addEventListener('mousedown',function(e){
     dragging=true;startX=e.clientX;startW=ep.offsetWidth;
-    spl.classList.add('dragging');
-    cover.style.display='block'; // blocks iframe from capturing events
-    e.preventDefault();
+    spl.classList.add('dragging');cover.style.display='block';e.preventDefault();
   });
   document.addEventListener('mousemove',function(e){
     if(!dragging)return;
     var wsRect=ws.getBoundingClientRect();
     var newW=startW+(e.clientX-startX);
-    var minW=180,maxW=wsRect.width-180-spl.offsetWidth;
-    ep.style.width=Math.max(minW,Math.min(maxW,newW))+'px';
+    ep.style.width=Math.max(180,Math.min(wsRect.width-180-spl.offsetWidth,newW))+'px';
   });
   document.addEventListener('mouseup',function(){
     if(dragging){dragging=false;spl.classList.remove('dragging');cover.style.display='none';}
@@ -582,35 +593,50 @@ function addCR(tbl){
 // ══════════════════════════════════════════
 //  UNDO / REDO
 // ══════════════════════════════════════════
-function doUndo(){
-  if(!edDoc)return;
-  edDoc.execCommand('undo',false,null);
-  edDoc.body.focus();updateStats();
-}
-function doRedo(){
-  if(!edDoc)return;
-  edDoc.execCommand('redo',false,null);
-  edDoc.body.focus();updateStats();
-}
+function doUndo(){if(!edDoc)return;edDoc.execCommand('undo',false,null);edDoc.body.focus();updateStats();}
+function doRedo(){if(!edDoc)return;edDoc.execCommand('redo',false,null);edDoc.body.focus();updateStats();}
 
 // ══════════════════════════════════════════
-//  execCommand on iframe doc
+//  execCommand
 // ══════════════════════════════════════════
 function ec(cmd,val){
   if(!edDoc)return;
   edDoc.execCommand(cmd,false,val||null);
   edDoc.body.focus();updateStats();
 }
-function ecSize(px){
-  if(!px||!edDoc)return;
+
+// CHANGE 2: Font family — wrap in span with style for reliable cross-browser support
+function applyFontFamily(family){
+  if(!family||!edDoc)return;
   var sel=edDoc.getSelection();
-  if(!sel||!sel.rangeCount||sel.isCollapsed)return;
+  if(!sel||!sel.rangeCount||sel.isCollapsed){
+    // No selection — just use execCommand for future typing
+    edDoc.execCommand('fontName',false,family);
+    edDoc.body.focus();return;
+  }
   var range=sel.getRangeAt(0);
-  var span=edDoc.createElement('span');span.style.fontSize=px;
+  var span=edDoc.createElement('span');
+  span.style.fontFamily=family;
   try{range.surroundContents(span);}
-  catch(e){var f=range.extractContents();span.appendChild(f);range.insertNode(span);}
+  catch(e){var frag=range.extractContents();span.appendChild(frag);range.insertNode(span);}
   updateStats();
 }
+
+// CHANGE 2: Font size — wrap in span with px size
+function applyFontSize(px){
+  if(!px||!edDoc)return;
+  var sel=edDoc.getSelection();
+  if(!sel||!sel.rangeCount||sel.isCollapsed){
+    edDoc.body.focus();return;
+  }
+  var range=sel.getRangeAt(0);
+  var span=edDoc.createElement('span');
+  span.style.fontSize=px;
+  try{range.surroundContents(span);}
+  catch(e){var frag=range.extractContents();span.appendChild(frag);range.insertNode(span);}
+  updateStats();
+}
+
 function insertNode(node){
   if(!edDoc)return;
   edDoc.body.focus();
@@ -633,7 +659,6 @@ function doHR(){
 //  LINK MODAL
 // ══════════════════════════════════════════
 function openLinkModal(){
-  // Pre-fill if text is selected
   var sel=edDoc?edDoc.getSelection():null;
   var txt=sel&&!sel.isCollapsed?sel.toString():'';
   document.getElementById('lnk-text').value=txt;
@@ -648,9 +673,7 @@ function insertLink(){
   if(!url){showToast('Enter a URL','⚠');return;}
   var a=edDoc.createElement('a');
   a.href=url;a.target='_blank';a.style.color=color;a.textContent=txt;
-  insertNode(a);
-  closeModal('linkModal');
-  showToast('Link inserted','🔗');
+  insertNode(a);closeModal('linkModal');showToast('Link inserted','🔗');
 }
 
 // ══════════════════════════════════════════
@@ -671,42 +694,10 @@ function updateStats(){
 
 // ══════════════════════════════════════════
 //  SPECIAL CHARACTER FIXER
-//  Converts AI/Word chars → email-safe HTML entities
 // ══════════════════════════════════════════
 function fixSpecialChars(html){
-  var map={
-    '\u20B9':'&#8377;',   // ₹ Indian Rupee
-    '\u2019':'&#39;',     // ' right single quote → apostrophe
-    '\u2018':'&#39;',     // ' left single quote
-    '\u201C':'&ldquo;',   // " left double quote
-    '\u201D':'&rdquo;',   // " right double quote
-    '\u2013':'&ndash;',   // – en dash
-    '\u2014':'&mdash;',   // — em dash
-    '\u2026':'&hellip;',  // … ellipsis
-    '\u00A0':'&nbsp;',    // non-breaking space
-    '\u00B7':'&middot;',  // · middle dot
-    '\u2022':'&#8226;',   // • bullet
-    '\u00AE':'&reg;',     // ® registered
-    '\u2122':'&trade;',   // ™ trademark
-    '\u00A9':'&copy;',    // © copyright
-    '\u00BD':'&frac12;',  // ½
-    '\u00BC':'&frac14;',  // ¼
-    '\u00BE':'&frac34;',  // ¾
-    '\u00D7':'&times;',   // ×
-    '\u00F7':'&divide;',  // ÷
-    '\u2264':'&le;',      // ≤
-    '\u2265':'&ge;',      // ≥
-    '\u2260':'&ne;',      // ≠
-    '\u00B0':'&deg;',     // °
-    '\u00B1':'&plusmn;'   // ±
-  };
-  // Only fix text nodes, not inside attribute values or tag brackets
-  // We do a safe replacement that avoids breaking existing HTML entities
-  Object.keys(map).forEach(function(ch){
-    // Replace char when NOT already inside an & entity
-    var re=new RegExp(ch,'g');
-    html=html.replace(re,map[ch]);
-  });
+  var map={'\u20B9':'&#8377;','\u2019':'&#39;','\u2018':'&#39;','\u201C':'&ldquo;','\u201D':'&rdquo;','\u2013':'&ndash;','\u2014':'&mdash;','\u2026':'&hellip;','\u00A0':'&nbsp;','\u00B7':'&middot;','\u2022':'&#8226;','\u00AE':'&reg;','\u2122':'&trade;','\u00A9':'&copy;','\u00BD':'&frac12;','\u00BC':'&frac14;','\u00BE':'&frac34;','\u00D7':'&times;','\u00F7':'&divide;','\u2264':'&le;','\u2265':'&ge;','\u2260':'&ne;','\u00B0':'&deg;','\u00B1':'&plusmn;'};
+  Object.keys(map).forEach(function(ch){html=html.replace(new RegExp(ch,'g'),map[ch]);});
   return html;
 }
 
@@ -721,8 +712,7 @@ function doConvert(){
       var html=edDoc?edDoc.body.innerHTML:'';
       if(!html||html.trim()===''){showToast('Editor is empty','⚠');btn.textContent='⚡ Convert to HTML';btn.disabled=false;return;}
       var out=processHTML(html);
-      setOutput(out);
-      btn.textContent='✓ Done!';
+      setOutput(out);btn.textContent='✓ Done!';
       showToast('HTML ready — '+out.length+' chars','✓');
       setTimeout(function(){btn.textContent='⚡ Convert to HTML';btn.disabled=false;},1600);
     }catch(e){btn.textContent='⚡ Convert to HTML';btn.disabled=false;showToast('Error: '+e.message,'✕');}
@@ -736,14 +726,9 @@ function doMinify(){
   var v=document.getElementById('htmlOut').value;
   if(!v){showToast('Convert first','⚠');return;}
   var before=v.length;
-  v=v.replace(/<!--(?!\[if)[\s\S]*?-->/g,'');
-  v=v.replace(/>\s+</g,'><');
-  v=v.replace(/\s{2,}/g,' ');
-  v=v.replace(/\s*;\s*/g,';').replace(/\s*:\s*/g,':');
-  v=v.replace(/;"/g,'"').replace(/;;/g,';');
-  v=v.replace(/\sstyle=""/g,'');
-  v=v.replace(/:0px/g,':0').replace(/:0\.0/g,':0');
-  v=v.trim();
+  v=v.replace(/<!--(?!\[if)[\s\S]*?-->/g,'').replace(/>\s+</g,'><').replace(/\s{2,}/g,' ')
+    .replace(/\s*;\s*/g,';').replace(/\s*:\s*/g,':').replace(/;"/g,'"').replace(/;;/g,';')
+    .replace(/\sstyle=""/g,'').replace(/:0px/g,':0').replace(/:0\.0/g,':0').trim();
   setOutput(v);
   showToast('Minified: '+before+' → '+v.length+' chars ('+(before-v.length)+' saved)','⚡');
 }
@@ -752,17 +737,12 @@ function doMinify(){
 //  HTML PROCESSING
 // ══════════════════════════════════════════
 function processHTML(html){
-  // Strip resize helper elements
   html=html.replace(/<span class="rh"[^>]*><\/span>/gi,'');
   html=html.replace(/<span class="sz"[^>]*>[^<]*<\/span>/gi,'');
   html=html.replace(/<div class="cr"[^>]*><\/div>/gi,'');
-  // Unwrap img-wrap spans → just keep the img
-  html=html.replace(/<span class="img-wrap"[^>]*>([\s\S]*?)<\/span>/gi,function(m,inner){
-    var im=inner.match(/<img[^>]*>/i);return im?im[0]:'';
-  });
+  html=html.replace(/<span class="img-wrap"[^>]*>([\s\S]*?)<\/span>/gi,function(m,inner){var im=inner.match(/<img[^>]*>/i);return im?im[0]:'';});
   html=html.replace(/\sclass="wrapped"/gi,'');
   html=html.replace(/\sdata-cr="[^"]*"/gi,'');
-
   if(g('o-ms')){
     html=html.replace(/<!--\[if[\s\S]*?<!\[endif\]-->/gi,'');
     html=html.replace(/\sclass="?Mso[A-Za-z]+"?/gi,'');
@@ -773,28 +753,17 @@ function processHTML(html){
   }
   if(g('o-cls'))html=html.replace(/\sclass="[^"]*"/gi,'');
   if(!g('o-inline')){html=html.replace(/\sstyle="[^"]*"/gi,'');}
-  else{
-    html=html.replace(/\sstyle="([^"]*)"/gi,function(m,s){
-      var c=s.split(';').filter(function(p){return p.trim()&&!p.trim().toLowerCase().startsWith('mso-');}).join(';');
-      return c?' style="'+c+'"':'';
-    });
-  }
+  else{html=html.replace(/\sstyle="([^"]*)"/gi,function(m,s){var c=s.split(';').filter(function(p){return p.trim()&&!p.trim().toLowerCase().startsWith('mso-');}).join(';');return c?' style="'+c+'"':'';});}
   if(g('o-font'))html=html.replace(/<\/?font[^>]*>/gi,'');
   if(g('o-span')){html=html.replace(/<span[^>]*>\s*<\/span>/gi,'');html=html.replace(/<span>([\s\S]*?)<\/span>/gi,'$1');}
   html=html.replace(/<p[^>]*>\s*(&nbsp;|\u00a0)?\s*<\/p>/gi,'');
   html=html.replace(/<div[^>]*>\s*<\/div>/gi,'');
-
-  // Fix special chars BEFORE wrapping
   if(g('o-fixchars'))html=fixSpecialChars(html);
-
-  if(g('o-wrap')){
-    html='<table width="600" cellpadding="0" cellspacing="0" border="0" align="center" style="width:600px;max-width:600px;">\n  <tr>\n    <td style="font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:#333333;padding:20px;">\n'+html+'\n    </td>\n  </tr>\n</table>';
-  }
+  if(g('o-wrap')){html='<table width="600" cellpadding="0" cellspacing="0" border="0" align="center" style="width:600px;max-width:600px;">\n  <tr>\n    <td style="font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:#333333;padding:20px;">\n'+html+'\n    </td>\n  </tr>\n</table>';}
   if(g('o-pretty'))html=prettyPrint(html);
   return html.trim();
 }
 function g(id){return document.getElementById(id).checked;}
-
 function prettyPrint(html){
   var IL={a:1,abbr:1,b:1,br:1,button:1,cite:1,code:1,em:1,i:1,img:1,input:1,kbd:1,label:1,q:1,s:1,samp:1,select:1,small:1,span:1,strong:1,sub:1,sup:1,textarea:1,time:1,u:1,'var':1};
   var res='',ind=0,tab='  ';
@@ -821,22 +790,14 @@ function htmlToEditor(){
   updateStats();showToast('HTML loaded into editor','↩');
 }
 
-// Make output textarea editable
 document.getElementById('htmlOut').removeAttribute('readonly');
 document.getElementById('htmlOut').addEventListener('input',function(){updateCharCount(this.value);});
 
-function setOutput(html){
-  document.getElementById('htmlOut').value=html;
-  updateCharCount(html);
-  if(activeTab==='prev')refreshPreview(html);
-}
+function setOutput(html){document.getElementById('htmlOut').value=html;updateCharCount(html);if(activeTab==='prev')refreshPreview(html);}
 function updateCharCount(v){
-  var el=document.getElementById('ccount');
-  var n=v.length,pct=Math.round(n/50000*100);
-  el.textContent=n.toLocaleString()+' chars ('+pct+'% of 50k)';
-  el.className='';
-  if(n>45000)el.className='char-err';
-  else if(n>35000)el.className='char-warn';
+  var el=document.getElementById('ccount'),n=v.length,pct=Math.round(n/50000*100);
+  el.textContent=n.toLocaleString()+' chars ('+pct+'% of 50k)';el.className='';
+  if(n>45000)el.className='char-err';else if(n>35000)el.className='char-warn';
 }
 
 // ══════════════════════════════════════════
@@ -864,22 +825,13 @@ function copyHTML(){
   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(v).then(function(){showToast('Copied!','✓');}).catch(function(){fbCopy(v);});}
   else fbCopy(v);
 }
-function fbCopy(v){
-  var ta=document.createElement('textarea');ta.value=v;ta.style.cssText='position:fixed;opacity:0;top:0;left:0;';
-  document.body.appendChild(ta);ta.focus();ta.select();
-  try{document.execCommand('copy');showToast('Copied!','✓');}catch(e){showToast('Select text manually','⚠');}
-  document.body.removeChild(ta);
-}
+function fbCopy(v){var ta=document.createElement('textarea');ta.value=v;ta.style.cssText='position:fixed;opacity:0;top:0;left:0;';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');showToast('Copied!','✓');}catch(e){showToast('Select text manually','⚠');}document.body.removeChild(ta);}
 function downloadHTML(){
   var v=document.getElementById('htmlOut').value;
   if(!v){showToast('Convert first','⚠');return;}
   var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([v],{type:'text/html'}));a.download='email-template.html';a.click();showToast('Downloaded','↓');
 }
-function doClear(){
-  if(!confirm('Clear all content?'))return;
-  if(edDoc)edDoc.body.innerHTML='';
-  document.getElementById('htmlOut').value='';document.getElementById('ccount').textContent='';updateStats();
-}
+function doClear(){if(!confirm('Clear all content?'))return;if(edDoc)edDoc.body.innerHTML='';document.getElementById('htmlOut').value='';document.getElementById('ccount').textContent='';updateStats();}
 
 // ══════════════════════════════════════════
 //  IMAGE CONTEXT
@@ -918,7 +870,7 @@ function applyDrive(){
 }
 
 // ══════════════════════════════════════════
-//  TABLE CONTEXT — tabbed
+//  TABLE CONTEXT
 // ══════════════════════════════════════════
 function switchCtxTab(t){
   curCtxTab=t;
@@ -928,25 +880,20 @@ function switchCtxTab(t){
   });
 }
 function openTblCtx(tbl,td,e){
-  selTbl=tbl;selCell=td||null;
-  selRow=td?td.parentElement:null;
+  selTbl=tbl;selCell=td||null;selRow=td?td.parentElement:null;
   edDoc.querySelectorAll('table').forEach(function(t){t.classList.remove('sel-tbl');});
   edDoc.querySelectorAll('td,th').forEach(function(c){c.classList.remove('sel-cell');});
-  tbl.classList.add('sel-tbl');
-  if(td)td.classList.add('sel-cell');
-  // Table tab
+  tbl.classList.add('sel-tbl');if(td)td.classList.add('sel-cell');
   document.getElementById('tw').value=tbl.style.width||tbl.getAttribute('width')||'';
   document.getElementById('tborder').value='';document.getElementById('tpad').value='';
   document.getElementById('talign').value=tbl.style.textAlign||tbl.getAttribute('align')||'';
   document.getElementById('tbgh').value='';document.getElementById('tbgp').value='#ffffff';
-  // Row tab
   if(selRow){
     document.getElementById('rh').value=selRow.style.height||'';
     var rbg=selRow.style.backgroundColor;var rhex=rbg?rgbHex(rbg):'';
     document.getElementById('rbgh').value=rhex;document.getElementById('rbgp').value=rhex||'#ffffff';
     document.getElementById('rfw').value=selRow.style.fontWeight||'';
   }
-  // Cell tab
   if(td){
     var bg=td.style.backgroundColor;var hex=bg?rgbHex(bg):'';
     document.getElementById('cbgh').value=hex;document.getElementById('cbgp').value=hex||'#ffffff';
@@ -963,58 +910,36 @@ function openTblCtx(tbl,td,e){
 }
 function applyTbl(){
   if(!selTbl)return;
-  var w=document.getElementById('tw').value.trim();
-  var bdr=document.getElementById('tborder').value.trim();
-  var pad=document.getElementById('tpad').value.trim();
-  var align=document.getElementById('talign').value;
-  var bg=document.getElementById('tbgh').value.trim()||document.getElementById('tbgp').value;
-  if(w)selTbl.style.width=w;
-  if(align)selTbl.style.textAlign=align;
-  if(bg&&bg!=='#ffffff')selTbl.style.backgroundColor=bg;
+  var w=document.getElementById('tw').value.trim(),bdr=document.getElementById('tborder').value.trim(),pad=document.getElementById('tpad').value.trim(),align=document.getElementById('talign').value,bg=document.getElementById('tbgh').value.trim()||document.getElementById('tbgp').value;
+  if(w)selTbl.style.width=w;if(align)selTbl.style.textAlign=align;if(bg&&bg!=='#ffffff')selTbl.style.backgroundColor=bg;
   if(bdr)selTbl.querySelectorAll('td,th').forEach(function(c){c.style.border=bdr;});
   if(pad)selTbl.querySelectorAll('td,th').forEach(function(c){c.style.padding=pad;});
   showToast('Table updated','⊞');
 }
 function applyRow(){
   if(!selRow)return;
-  var h=document.getElementById('rh').value.trim();
-  var bg=document.getElementById('rbgh').value.trim()||document.getElementById('rbgp').value;
-  var fw=document.getElementById('rfw').value;
-  if(h)selRow.style.height=h;
-  if(bg&&bg!=='#ffffff')selRow.style.backgroundColor=bg;
-  if(fw)selRow.style.fontWeight=fw;
+  var h=document.getElementById('rh').value.trim(),bg=document.getElementById('rbgh').value.trim()||document.getElementById('rbgp').value,fw=document.getElementById('rfw').value;
+  if(h)selRow.style.height=h;if(bg&&bg!=='#ffffff')selRow.style.backgroundColor=bg;if(fw)selRow.style.fontWeight=fw;
   showToast('Row updated','✓');
 }
 function applyCell(){
   if(!selCell)return;
   var bg=document.getElementById('cbgh').value.trim()||document.getElementById('cbgp').value;
-  var w=document.getElementById('cw').value.trim();
-  var h=document.getElementById('ch').value.trim();
-  var al=document.getElementById('calign').value;
-  var va=document.getElementById('cvalign').value;
-  var bdr=document.getElementById('cborder').value.trim();
-  var fs=document.getElementById('cfs').value.trim();
+  var w=document.getElementById('cw').value.trim(),h=document.getElementById('ch').value.trim();
+  var al=document.getElementById('calign').value,va=document.getElementById('cvalign').value;
+  var bdr=document.getElementById('cborder').value.trim(),fs=document.getElementById('cfs').value.trim();
   var fc=document.getElementById('cfch').value.trim()||document.getElementById('cfcp').value;
-  if(bg&&bg!=='#ffffff')selCell.style.backgroundColor=bg;
-  if(w)selCell.style.width=w;
-  if(h)selCell.style.height=h;
-  if(al)selCell.style.textAlign=al;
-  if(va)selCell.style.verticalAlign=va;
-  if(bdr)selCell.style.border=bdr;
-  if(fs)selCell.style.fontSize=fs;
-  if(fc&&fc!=='#000000')selCell.style.color=fc;
+  if(bg&&bg!=='#ffffff')selCell.style.backgroundColor=bg;if(w)selCell.style.width=w;if(h)selCell.style.height=h;
+  if(al)selCell.style.textAlign=al;if(va)selCell.style.verticalAlign=va;if(bdr)selCell.style.border=bdr;
+  if(fs)selCell.style.fontSize=fs;if(fc&&fc!=='#000000')selCell.style.color=fc;
   showToast('Cell updated','✓');
 }
-function syncCP(picker,hex){
-  var v=document.getElementById(hex).value;
-  if(/^#[0-9a-fA-F]{6}$/.test(v))document.getElementById(picker).value=v;
-}
+function syncCP(picker,hex){var v=document.getElementById(hex).value;if(/^#[0-9a-fA-F]{6}$/.test(v))document.getElementById(picker).value=v;}
 function tblOp(op){
   if(!selTbl)return;
   var rows=selTbl.rows;
   if(op==='addRow'){
-    var nr=selTbl.insertRow(-1);
-    var nc=rows[0]?rows[0].cells.length:1;
+    var nr=selTbl.insertRow(-1);var nc=rows[0]?rows[0].cells.length:1;
     for(var i=0;i<nc;i++){
       var c=nr.insertCell(-1);
       c.style.cssText=(rows.length>1?rows[rows.length-2]:rows[0]).cells[i]?rows[rows.length>1?rows.length-2:0].cells[i].style.cssText:'border:1px solid #ccc;padding:8px 12px;';
@@ -1072,12 +997,12 @@ function doInsertTable(){
 }
 
 // ══════════════════════════════════════════
-//  IMAGE INSERT
+//  CHANGE 3: IMAGE INSERT — URL and Drive only
 // ══════════════════════════════════════════
-function openImgModal(){upB64='';openModal('imgModal');}
+function openImgModal(){openModal('imgModal');}
 function switchMTab(t){
   curMTab=t;
-  ['url','drive','upload','b64'].forEach(function(x){
+  ['url','drive'].forEach(function(x){
     document.getElementById('mt-'+x).classList.toggle('on',x===t);
     document.getElementById('mp-'+x).style.display=x===t?'block':'none';
   });
@@ -1091,22 +1016,13 @@ function driveUrl(raw){
 function prvDrive(){
   var raw=document.getElementById('m-drive').value.trim();var d=driveUrl(raw);
   var p=document.getElementById('m-drive-p');var u=document.getElementById('m-drive-u');
-  if(d){p.src=d;p.style.display='block';u.textContent='→ '+d;u.style.display='block';}
+  if(d){p.src=d;p.style.display='block';u.textContent='Direct URL → '+d;u.style.display='block';}
   else{p.style.display='none';u.style.display='none';}
-}
-function onDrop(e){e.preventDefault();document.getElementById('dz').classList.remove('over');var f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))readFile(f);}
-function onFile(e){var f=e.target.files[0];if(f)readFile(f);}
-function readFile(f){
-  var r=new FileReader();
-  r.onload=function(ev){upB64=ev.target.result;var p=document.getElementById('m-up-p');p.src=upB64;p.style.display='block';document.getElementById('dz').textContent='✓ '+f.name;};
-  r.readAsDataURL(f);
 }
 function insertImg(){
   var src='';
   if(curMTab==='url')src=document.getElementById('m-url').value.trim();
-  else if(curMTab==='drive'){src=driveUrl(document.getElementById('m-drive').value.trim())||'';if(!src){showToast('Invalid Drive link','⚠');return;}}
-  else if(curMTab==='upload')src=upB64;
-  else{var b=document.getElementById('m-b64').value.trim();src=b.startsWith('data:')?b:'data:image/png;base64,'+b;}
+  else{src=driveUrl(document.getElementById('m-drive').value.trim())||'';if(!src){showToast('Invalid Drive link','⚠');return;}}
   if(!src){showToast('No image source','⚠');return;}
   var img=edDoc.createElement('img');
   img.src=src;img.alt=document.getElementById('m-alt').value.trim();
@@ -1120,8 +1036,7 @@ function insertImg(){
 // ══════════════════════════════════════════
 function posCtx(id,e){
   var p=document.getElementById(id);p.classList.add('show');
-  var vw=window.innerWidth,vh=window.innerHeight;
-  var pw=p.offsetWidth||260,ph=p.offsetHeight||300;
+  var vw=window.innerWidth,vh=window.innerHeight,pw=p.offsetWidth||260,ph=p.offsetHeight||300;
   var x=e.clientX+14,y=e.clientY+14;
   if(x+pw>vw-6)x=vw-pw-6;if(y+ph>vh-6)y=vh-ph-6;
   p.style.left=x+'px';p.style.top=y+'px';
@@ -1160,10 +1075,8 @@ document.addEventListener('keydown',function(e){
   if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key==='Enter'){e.preventDefault();doConvert();}
   if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key==='C'){e.preventDefault();copyHTML();}
   if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key==='M'){e.preventDefault();doMinify();}
-  if(e.key==='Escape'){closeCtx('imgCtx');closeCtx('tblCtx');
-    document.querySelectorAll('.overlay.open').forEach(function(o){o.classList.remove('open');});}
+  if(e.key==='Escape'){closeCtx('imgCtx');closeCtx('tblCtx');document.querySelectorAll('.overlay.open').forEach(function(o){o.classList.remove('open');});}
 });
-// Also wire Ctrl+Z/Y inside the iframe editor
 window.addEventListener('load',function(){
   var frame=document.getElementById('edFrame');
   if(frame.contentWindow){
